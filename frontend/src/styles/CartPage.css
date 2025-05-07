@@ -1,0 +1,38 @@
+.cart-container {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  
+  .cart-main {
+  
+      width: 80%;
+      padding: 30px;
+      box-sizing: border-box;
+    
+  }
+  
+  .cart-content {
+    display: flex;
+    gap: 32px;
+    padding: 24px;
+  }
+  
+  .cart-left {
+    flex: 1;
+  }
+  
+  .cart-left h1 {
+    font-size: 24px;
+    margin: 0;
+  }
+  
+  .cart-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 16px;
+  }
+  
+  .cart-right {
+    width: 320px;
+  }

@@ -42,12 +42,13 @@ function Login() {
 
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
+            localStorage.setItem('userId', data.user.id); // Explicitly store userId
 
             if (data.user.role === 'Admin') {
                 navigate('/admin/manage-book');
 
             } else if (data.user.role === 'Member') {
-                navigate('/dashboard');
+                navigate('/member-landing');
             }
             else if (data.user.role === 'Staff') {
                 navigate('/staff/StaffDashboard');

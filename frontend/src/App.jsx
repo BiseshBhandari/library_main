@@ -12,6 +12,12 @@ import AdminLayout from './layouts/AdminLayout';
 import StaffLayout from './layouts/StaffLayout';
 import MemberLayout from './layouts/MemberLayout';
 
+import Bookmark from './pages/MemberPage/Bookmark';
+import CartPage from './pages/MemberPage/CartPage';
+import CheckoutPage from './pages/MemberPage/CheckoutOrder';
+import MemberLanding from './pages/MemberPage/MemberLanding';
+
+
 function App() {
   return (
     <Router>
@@ -31,9 +37,14 @@ function App() {
             <Route path="StaffDashboard" element={<StaffDashboard />} />
           </Route>
 
-          <Route path='/member/*' element={<MemberLayout />}>
-            {/* <Route path="StaffDashboard" element={<StaffDashboard />} /> */}
-          </Route>
+          {/* <Route path='/member/*' element={<MemberLayout />}>
+
+          </Route> */}
+
+          <Route path="/member-landing" element={<MemberLanding />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/bookmark" element={<Bookmark />} />
 
 
 

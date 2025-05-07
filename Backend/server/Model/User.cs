@@ -11,4 +11,8 @@ public class User
     public string Role { get; set; } = "Member";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    
+    public ICollection<Whitelist> Whitelists { get; set; } = new List<Whitelist>();
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
+
 }

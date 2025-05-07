@@ -1,18 +1,32 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Server.Model;
 
 public class Order
 {
-    public Guid Id { get; set; }       // Primary Key for Order
-    public Guid UserId { get; set; }   // Foreign Key referencing User's Id (Guid)
-    public string Status { get; set; }
-    public decimal Total { get; set; }
-    public decimal Discount { get; set; }
+    [Key]
+    public Guid Id { get; set; }
+
+    public Guid UserId { get; set; }
+
+    public User User { get; set; }
+
+    [Required]
+    [MaxLength(6)]
     public string ClaimCode { get; set; }
+
+    [Range(0, double.MaxValue)]
+    public decimal TotalPrice { get; set; }
+
+    [Required]
+    [MaxLength(50)]
+    public string Status { get; set; } = "Pending";
+
     public DateTime CreatedAt { get; set; }
 
-    // Navigation: One Order has many OrderItems
-    public List<OrderItem> OrderItems { get; set; } = new();
+    public DateTime UpdatedAt { get; set; }
+
+    public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
 }

@@ -242,3 +242,7 @@ E:\Library Management Application\Backend\Server\obj\Debug\net8.0\refint\Server.
 E:\Library Management Application\Backend\Server\obj\Debug\net8.0\Server.pdb
 E:\Library Management Application\Backend\Server\obj\Debug\net8.0\Server.genruntimeconfig.cache
 E:\Library Management Application\Backend\Server\obj\Debug\net8.0\ref\Server.dll
+E:\Library Management Application\Backend\Server\obj\Debug\net8.0\Server.sourcelink.json
+E:\Library Management Application\Backend\Server\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+E:\Library Management Application\Backend\Server\bin\Debug\net8.0\MailKit.dll
+E:\Library Management Application\Backend\Server\bin\Debug\net8.0\MimeKit.dll

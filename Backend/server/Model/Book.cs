@@ -6,7 +6,7 @@ namespace Server.Model;
 public class Book
 {
     [Key]
-    public Guid Id { get; set; } 
+    public Guid Id { get; set; }
 
     [Required]
     [MaxLength(255)]
@@ -40,5 +40,7 @@ public class Book
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    // public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public ICollection<Whitelist> Whitelists { get; set; } = new List<Whitelist>();
+
 }
