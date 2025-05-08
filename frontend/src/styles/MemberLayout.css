@@ -1,0 +1,21 @@
+/* Layout container */
+.member-layout {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+/* Navbar stays fixed at top */
+.MemberNav {
+    background-color: #2c3e50;
+    color: white;
+    padding: 10px 20px;
+}
+
+/* Scrollable content */
+.member-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #ecf0f1;
+}

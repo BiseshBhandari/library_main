@@ -37,11 +37,10 @@ function App() {
             <Route path="StaffDashboard" element={<StaffDashboard />} />
           </Route>
 
-          {/* <Route path='/member/*' element={<MemberLayout />}>
+          <Route path='/member/*' element={<MemberLayout />}>
+            <Route path="member-landing" element={<MemberLanding />} />
+          </Route>
 
-          </Route> */}
-
-          <Route path="/member-landing" element={<MemberLanding />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/bookmark" element={<Bookmark />} />

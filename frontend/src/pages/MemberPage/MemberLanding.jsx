@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaBookmark as Bookmarked, FaRegBookmark as Unbookmarked, FaShoppingCart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-// import Sidebar from '../Components/Sidebar';
-// import NavBar from '../Components/Navbar';
-// import '../styles/LandingPage.css';
-// import Sidebar from '../../Components/Navigation/MemberSide';
-import MemberSide from '../../Components/Navigation/MemberSide';
+// import MemberSide from '../../Components/Navigation/MemberSide';
 import NavBar from '../../Components/Navigation/MemberNav';
 import '../../styles/MemberLanding.css';
 
@@ -22,7 +18,12 @@ export default function MemberLanding() {
                 const response = await fetch('http://localhost:5001/api/Admin/Book/getAllBooks');
                 if (!response.ok) throw new Error(`Failed to fetch books: ${response.status}`);
                 const data = await response.json();
-                const mappedBooks = data.map(book => ({
+                // Access $values if it exists, otherwise use data directly
+                const bookArray = data.$values || data;
+                if (!Array.isArray(bookArray)) {
+                    throw new Error('Expected an array of books');
+                }
+                const mappedBooks = bookArray.map(book => ({
                     id: book.id,
                     title: book.title || 'Untitled',
                     author: book.author || 'Unknown Author',
@@ -37,11 +38,6 @@ export default function MemberLanding() {
         };
 
         const fetchBookmarkedBooks = async () => {
-            // if (!userId) {
-            //     console.log('No userId found in localStorage, redirecting to login');
-            //     navigate('/login');
-            //     return;
-            // }
             try {
                 const response = await fetch(`http://localhost:5001/api/Whitelist/user/${userId}`, {
                     headers: {
@@ -55,7 +51,14 @@ export default function MemberLanding() {
                 }
                 if (!response.ok) throw new Error(`Failed to fetch bookmarks: ${response.status}`);
                 const data = await response.json();
-                const ids = new Set(data.map(item => item.bookId));
+                // Access $values if it exists, otherwise use data directly
+                const bookmarkArray = data.$values || data;
+                if (!Array.isArray(bookmarkArray)) {
+                    console.warn('Bookmark data is not an array, setting empty bookmarks');
+                    setBookmarkedIds(new Set());
+                    return;
+                }
+                const ids = new Set(bookmarkArray.map(item => item.bookId));
                 setBookmarkedIds(ids);
             } catch (error) {
                 console.error('Error fetching bookmarked books:', error);
@@ -64,11 +67,16 @@ export default function MemberLanding() {
         };
 
         fetchBooks();
-        fetchBookmarkedBooks();
+        if (userId && token) {
+            fetchBookmarkedBooks();
+        } else {
+            console.log('No userId or token found, skipping bookmark fetch');
+            setBookmarkedIds(new Set());
+        }
     }, [userId, navigate, token]);
 
     const handleToggle = async (bookId) => {
-        if (!userId) {
+        if (!userId || !token) {
             alert('Please log in to bookmark books.');
             navigate('/login');
             return;
@@ -128,7 +136,7 @@ export default function MemberLanding() {
     };
 
     const handleAddToCart = async (bookId) => {
-        if (!userId) {
+        if (!userId || !token) {
             alert('Please log in to add items to cart.');
             navigate('/login');
             return;
@@ -158,35 +166,34 @@ export default function MemberLanding() {
             alert('Failed to add book to cart. Please try again.');
         }
     };
-
     return (
-        <div className="container">
-            <MemberSide />
-            <div className="main">
+        <div className="member_landing_container">
+            {/* <MemberSide /> */}
+            <div className="member_landing_main">
                 <NavBar />
-                <div className="section">
-                    <h2 className="section-title">Bestsellers</h2>
+                <div className="member_landing_section">
+                    <h2 className="member_landing_section_title">Bestsellers</h2>
                     {books.length === 0 ? (
-                        <p>No books available. Check the API or database.</p>
+                        <p className="member_landing_empty_message">No books available. Check the API or database.</p>
                     ) : (
-                        <div className="book-grid">
+                        <div className="member_landing_book_grid">
                             {books.map(book => (
-                                <div key={book.id} className="book-card">
+                                <div key={book.id} className="member_landing_book_card">
                                     <img
                                         src={book.coverUrl}
                                         alt={book.title}
-                                        className="book-image"
+                                        className="member_landing_book_image"
                                         onError={(e) => (e.target.src = '/default-cover.jpg')}
                                     />
-                                    <h3 className="book-title">{book.title}</h3>
-                                    <p className="book-description">{book.author}</p>
-                                    <p className="book-price">${book.price.toFixed(2)}</p>
-                                    <div className="book-actions">
+                                    <h3 className="member_landing_book_title">{book.title}</h3>
+                                    <p className="member_landing_book_author">{book.author}</p>
+                                    <p className="member_landing_book_price">${book.price.toFixed(2)}</p>
+                                    <div className="member_landing_book_actions">
                                         {bookmarkedIds.has(book.id)
-                                            ? <Bookmarked onClick={() => handleToggle(book.id)} />
-                                            : <Unbookmarked onClick={() => handleToggle(book.id)} />}
+                                            ? <Bookmarked className="member_landing_icon member_landing_icon_bookmarked" onClick={() => handleToggle(book.id)} />
+                                            : <Unbookmarked className="member_landing_icon member_landing_icon_unbookmarked" onClick={() => handleToggle(book.id)} />}
                                         <FaShoppingCart
-                                            className="cart-icon"
+                                            className="member_landing_icon member_landing_icon_cart"
                                             onClick={() => handleAddToCart(book.id)}
                                         />
                                     </div>
@@ -196,15 +203,15 @@ export default function MemberLanding() {
                     )}
                 </div>
 
-                <div className="section">
-                    <h2 className="section-title">Authors</h2>
-                    <p className="section-subtitle">Find your favorite author</p>
-                    <div className="author-grid">
+                <div className="member_landing_section">
+                    <h2 className="member_landing_section_title">Authors</h2>
+                    <p className="member_landing_section_subtitle">Find your favorite author</p>
+                    <div className="member_landing_author_grid">
                         {['Romance', 'Thriller', 'Psychology', 'Horror', 'Novelist', 'Rock'].map((genre, index) => (
-                            <div key={genre + '-' + index} className="author-card">
-                                <div className="author-image"></div>
-                                <div className="author-name">Author Name</div>
-                                <div className="author-genre">{genre}</div>
+                            <div key={genre + '-' + index} className="member_landing_author_card">
+                                <div className="member_landing_author_image"></div>
+                                <div className="member_landing_author_name">Author Name</div>
+                                <div className="member_landing_author_genre">{genre}</div>
                             </div>
                         ))}
                     </div>

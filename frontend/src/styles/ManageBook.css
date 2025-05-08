@@ -1,271 +1,256 @@
-/* Container */
-.manage-book {
-    padding: 30px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f9f9f9;
+/* General container styling */
+.manage_book_container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #f9fafb;
     min-height: 100vh;
+    font-family: 'Inter', sans-serif;
 }
 
-/* Header */
-.manage-book_header {
+/* Header styling */
+.manage_book_header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 2rem;
 }
 
-.manage-book_header h1 {
+.manage_book_header h1 {
     font-size: 2rem;
-    color: #2c3e50;
+    font-weight: 600;
+    color: #1f2937;
 }
 
-.add-button {
-    background-color: #1abc9c;
+.manage_book_add_button {
+    background-color: #3b82f6;
     color: white;
-    padding: 10px 18px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
     border: none;
-    border-radius: 6px;
-    cursor: pointer;
     font-size: 1rem;
-    transition: background-color 0.3s, transform 0.1s;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.add-button:hover {
-    background-color: #16a085;
-    transform: translateY(-1px);
+.manage_book_add_button:hover {
+    background-color: #2563eb;
 }
 
-.add-button:active {
-    transform: translateY(0);
+/* Error message styling */
+.manage_book_error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
 }
 
-/* Error */
-.error {
-    background-color: #e74c3c;
-    color: white;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-}
-
-/* Modal */
-.modal {
+/* Modal styling */
+.manage_book_modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(44, 62, 80, 0.7);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    align-items: center;
     justify-content: center;
-    z-index: 999;
+    align-items: center;
+    z-index: 1000;
 }
 
-.modal-content {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
+.manage_book_modal_content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
     width: 100%;
-    max-width: 900px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.modal-content h2 {
-    margin-bottom: 20px;
-    color: #2c3e50;
-    font-size: 1.75rem;
+.manage_book_modal_content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
 }
 
-/* Form */
-.from_fileds_row_1 {
+/* Form styling */
+.manage_book_form_fields {
     display: flex;
-    flex-direction: row;
-    gap: 20px;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.form-group {
-    flex: 1;
+.manage_book_form_fields_row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.manage_book_form_group {
     display: flex;
     flex-direction: column;
 }
 
-.form-group label {
-    display: block;
-    font-size: 18px;
-    margin-bottom: 5px;
-    color: #34495e;
+.manage_book_form_group label {
+    font-size: 0.875rem;
     font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
 }
 
-.form-group input,
-.form-group textarea {
-    width: 90%;
-    padding: 10px;
-    height: 30px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
+.manage_book_form_group input,
+.manage_book_form_group textarea {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    color: #1f2937;
+    transition: border-color 0.2s;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
+.manage_book_form_group input:focus,
+.manage_book_form_group textarea:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    border-color: #3b82f6;
 }
 
-.form-group textarea {
-    height: 100px;
+.manage_book_form_group textarea {
     resize: vertical;
+    min-height: 100px;
 }
 
-.form-group input[type="file"] {
-    padding: 6px 10px;
-    height: auto;
+.manage_book_form_group input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
-.form-group input[type="checkbox"] {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #34495e;
-    border-radius: 4px;
-    position: relative;
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
+.manage_book_form_group input[type="file"] {
+    padding: 0.25rem;
 }
 
-.form-group input[type="checkbox"]:checked {
-    background-color: #3498db;
-    border-color: #3498db;
-}
-
-.form-group input[type="checkbox"]:checked::after {
-    content: '\2713';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-/* Form Buttons */
-.form-actions {
+/* Form actions */
+.manage_book_form_actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 1rem;
+    margin-top: 1.5rem;
 }
 
-.cancel-button,
-.submit-button {
-    padding: 10px 20px;
-    font-size: 1rem;
+.manage_book_cancel_button,
+.manage_book_submit_button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
     border: none;
-    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
+    transition: background-color 0.2s;
 }
 
-.cancel-button {
-    background-color: #7f8c8d;
+.manage_book_cancel_button {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.manage_book_cancel_button:hover {
+    background-color: #d1d5db;
+}
+
+.manage_book_submit_button {
+    background-color: #3b82f6;
     color: white;
 }
 
-.cancel-button:hover {
-    background-color: #636e72;
-    transform: translateY(-1px);
+.manage_book_submit_button:hover {
+    background-color: #2563eb;
 }
 
-.submit-button {
-    background-color: #3498db;
-    color: white;
-}
-
-.submit-button:hover {
-    background-color: #2980b9;
-    transform: translateY(-1px);
-}
-
-.cancel-button:active,
-.submit-button:active {
-    transform: translateY(0);
-}
-
-/* Table */
-.table-container {
+/* Table styling */
+.manage_book_table_container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     overflow-x: auto;
 }
 
-table {
+.manage_book_table_container table {
     width: 100%;
     border-collapse: collapse;
-    background-color: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-thead {
-    background-color: #34495e;
-    color: white;
-}
-
-th,
-td {
-    padding: 12px 16px;
+.manage_book_table_container th,
+.manage_book_table_container td {
+    padding: 0.75rem;
     text-align: left;
-    border-bottom: 1px solid #eee;
+    font-size: 0.875rem;
 }
 
-tbody tr:hover {
-    background-color: #f4f6f8;
+.manage_book_table_container th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+    color: #374151;
 }
 
-.action-button {
+.manage_book_table_container td {
+    border-top: 1px solid #e5e7eb;
+    color: #1f2937;
+}
+
+.manage_book_table_container tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Action buttons */
+.manage_book_action_button {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.1rem;
-    margin-right: 8px;
-    transition: transform 0.2s;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
 }
 
-.edit-button {
-    color: #2980b9;
+.manage_book_edit_button {
+    color: #3b82f6;
 }
 
-.delete-button {
-    color: #e74c3c;
+.manage_book_edit_button:hover {
+    background-color: #eff6ff;
 }
 
-.action-button:hover {
-    transform: scale(1.1);
+.manage_book_delete_button {
+    color: #ef4444;
 }
 
-/* Responsive Design */
+.manage_book_delete_button:hover {
+    background-color: #fef2f2;
+}
+
+/* Responsive design */
 @media (max-width: 768px) {
-    .manage-book {
-        padding: 20px;
-    }
-
-    .manage-book_header {
+    .manage_book_header {
         flex-direction: column;
+        gap: 1rem;
         align-items: flex-start;
-        gap: 15px;
     }
 
-    .modal-content {
-        max-width: 95%;
-        padding: 20px;
+    .manage_book_form_fields_row {
+        grid-template-columns: 1fr;
     }
 
-    .from_fileds_row_1 {
-        flex-direction: column;
-        gap: 15px;
+    .manage_book_modal_content {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .manage_book_table_container th,
+    .manage_book_table_container td {
+        padding: 0.5rem;
+        font-size: 0.75rem;
     }
 }
