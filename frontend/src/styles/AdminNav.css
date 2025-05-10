@@ -2,10 +2,11 @@
     width: 250px;
     background-color: #1f2937;
     color: #ffffff;
-    height: 100vh;
+    height: 93.5vh;
     position: relative;
     top: 0;
     left: 0;
+    padding: 30px;
     display: flex;
     flex-direction: column;
     font-family: 'Inter', sans-serif;
@@ -14,22 +15,24 @@
 }
 
 .admin_nav_collapsed {
-    width: 60px;
+    width: 80px;
 }
 
 .admin_nav_open {
-    width: 250px;
+    width: 240px;
 }
 
 .admin_nav_toggle_btn {
     display: flex;
     align-items: center;
-    justify-content: center;
+    /* justify-content: center; */
     padding: 1rem;
     cursor: pointer;
-    background-color: #374151;
+    /* background-color: #374151; */
     transition: background-color 0.2s;
 }
+
+
 
 .admin_nav_toggle_btn:hover {
     background-color: #4b5563;
@@ -51,9 +54,10 @@
 }
 
 .admin_nav_sidebar_item svg {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     margin-right: 1rem;
 }
+
 
 .admin_nav_collapsed .admin_nav_sidebar_item span {
     display: none;

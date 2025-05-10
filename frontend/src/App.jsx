@@ -7,6 +7,7 @@ import ManageBook from './pages/AdminPages/ManageBook';
 import StaffDashboard from './pages/StaffPage/StaffDashboard';
 import LandingPage from './pages/UserPage/Landingpage';
 import BookDetail from './pages/UserPage/BookDetail';
+import AnnouncementsPage from './pages/AdminPages/AnnouncementsPage';
 
 import AdminLayout from './layouts/AdminLayout';
 import StaffLayout from './layouts/StaffLayout';
@@ -31,6 +32,7 @@ function App() {
 
           <Route path='/admin/*' element={<AdminLayout />}>
             <Route path="manage-book" element={<ManageBook />} />
+            <Route path="announcements" element={<AnnouncementsPage />} />
           </Route>
 
           <Route path='/staff/*' element={<StaffLayout />}>

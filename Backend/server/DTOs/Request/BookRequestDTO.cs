@@ -25,7 +25,7 @@ public class BookRequestDTO
     [Range(0, int.MaxValue)]
     public int InventoryCount { get; set; }
 
-    public bool IsOnSale { get; set; }
+    // public bool IsOnSale { get; set; }
 
     public IFormFile? Image { get; set; }
 

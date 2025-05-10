@@ -30,7 +30,58 @@ namespace Server.Controllers
             }
         }
 
-       
+        // [HttpGet("getAllBooks")]
+        // public async Task<ActionResult<IEnumerable<BookResponseDTO>>> GetBooks()
+        // {
+        //     try
+        //     {
+        //         var books = await _context.Books.ToListAsync();
+        //         var now = DateTime.UtcNow;
+
+        //         var bookDtos = books.Select(b =>
+        //         {
+        //             // Check if the book is on sale and the discount is currently active
+        //             bool discountActive = b.IsOnSale &&
+        //                                   b.DiscountPercentage.HasValue &&
+        //                                   b.DiscountStart.HasValue &&
+        //                                   b.DiscountEnd.HasValue &&
+        //                                   b.DiscountStart.Value <= now &&
+        //                                   b.DiscountEnd.Value >= now;
+
+        //             // Calculate the effective price
+        //             decimal effectivePrice = discountActive
+        //                 ? Math.Round(b.Price * (1 - (decimal)b.DiscountPercentage.Value / 100), 2)
+        //                 : b.Price;
+
+        //             return new BookResponseDTO
+        //             {
+        //                 Id = b.Id,
+        //                 Title = b.Title,
+        //                 Author = b.Author,
+        //                 ISBN = b.ISBN,
+        //                 Genre = b.Genre,
+        //                 Description = b.Description,
+        //                 ImageUrl = b.ImageUrl,
+        //                 Price = b.Price,
+        //                 EffectivePrice = effectivePrice,
+        //                 InventoryCount = b.InventoryCount,
+        //                 IsOnSale = b.IsOnSale,
+        //                 DiscountPercentage = b.DiscountPercentage,
+        //                 DiscountStart = b.DiscountStart,
+        //                 DiscountEnd = b.DiscountEnd,
+        //                 CreatedAt = b.CreatedAt,
+        //                 UpdatedAt = b.UpdatedAt
+        //             };
+        //         }).ToList();
+
+        //         return Ok(bookDtos);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return StatusCode(StatusCodes.Status500InternalServerError,
+        //             new { message = "An error occurred while retrieving books", error = ex.Message });
+        //     }
+        // }
 
         [HttpGet("getAllBooks")]
         public async Task<ActionResult<IEnumerable<BookResponseDTO>>> GetBooks()
@@ -42,13 +93,17 @@ namespace Server.Controllers
 
                 var bookDtos = books.Select(b =>
                 {
-                    // Check if the book is on sale and the discount is currently active
-                    bool discountActive = b.IsOnSale &&
-                                          b.DiscountPercentage.HasValue &&
-                                          b.DiscountStart.HasValue &&
-                                          b.DiscountEnd.HasValue &&
-                                          b.DiscountStart.Value <= now &&
-                                          b.DiscountEnd.Value >= now;
+                    // Check if discount is expired
+                    bool isDiscountExpired = b.DiscountEnd.HasValue && b.DiscountEnd.Value < now;
+
+                    // Check if discount is active
+                    bool discountActive = !isDiscountExpired &&
+                                         b.IsOnSale &&
+                                         b.DiscountPercentage.HasValue &&
+                                         b.DiscountStart.HasValue &&
+                                         b.DiscountEnd.HasValue &&
+                                         b.DiscountStart.Value <= now &&
+                                         b.DiscountEnd.Value >= now;
 
                     // Calculate the effective price
                     decimal effectivePrice = discountActive
@@ -67,10 +122,10 @@ namespace Server.Controllers
                         Price = b.Price,
                         EffectivePrice = effectivePrice,
                         InventoryCount = b.InventoryCount,
-                        IsOnSale = b.IsOnSale,
-                        DiscountPercentage = b.DiscountPercentage,
-                        DiscountStart = b.DiscountStart,
-                        DiscountEnd = b.DiscountEnd,
+                        IsOnSale = isDiscountExpired ? false : b.IsOnSale,
+                        DiscountPercentage = isDiscountExpired ? null : b.DiscountPercentage,
+                        DiscountStart = isDiscountExpired ? null : b.DiscountStart,
+                        DiscountEnd = isDiscountExpired ? null : b.DiscountEnd,
                         CreatedAt = b.CreatedAt,
                         UpdatedAt = b.UpdatedAt
                     };
@@ -118,7 +173,7 @@ namespace Server.Controllers
                     ImageUrl = imageUrl,
                     Price = bookDto.Price,
                     InventoryCount = bookDto.InventoryCount,
-                    IsOnSale = bookDto.IsOnSale,
+                    // IsOnSale = bookDto.IsOnSale,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -184,7 +239,7 @@ namespace Server.Controllers
                 book.Description = bookDto.Description ?? book.Description;
                 book.Price = bookDto.Price ?? book.Price;
                 book.InventoryCount = bookDto.InventoryCount ?? book.InventoryCount;
-                book.IsOnSale = bookDto.IsOnSale ?? book.IsOnSale;
+                // book.IsOnSale = bookDto.IsOnSale ?? book.IsOnSale;
 
                 if (bookDto.Image != null)
                 {

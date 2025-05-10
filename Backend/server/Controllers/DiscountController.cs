@@ -42,5 +42,27 @@ namespace Server.Controllers
 
             return Ok(new { message = "Discount applied successfully." });
         }
+
+        [HttpPost("remove")]
+        public async Task<IActionResult> RemoveDiscount([FromBody] RemoveDiscoutDTO dto)
+        {
+            var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == dto.BookId);
+
+            if (book == null)
+            {
+                return NotFound(new { message = "Book not found." });
+            }
+
+            // Remove discount-related fields
+            book.DiscountPercentage = null;
+            book.DiscountStart = null;
+            book.DiscountEnd = null;
+            book.IsOnSale = false;
+            book.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Discount removed successfully." });
+        }
     }
 }

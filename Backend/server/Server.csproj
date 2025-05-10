@@ -19,9 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="DTOs\Response\" />
     <Folder Include="Images\" />
-    <Folder Include="Model\" />
   </ItemGroup>
 
 </Project>

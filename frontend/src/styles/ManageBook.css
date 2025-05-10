@@ -1,6 +1,6 @@
 /* General container styling */
 .manage_book_container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
     background-color: #f9fafb;
@@ -133,6 +133,11 @@
     padding: 0.25rem;
 }
 
+.manage_book_form_group input[type="number"],
+.manage_book_form_group input[type="datetime-local"] {
+    width: 100%;
+}
+
 /* Form actions */
 .manage_book_form_actions {
     display: flex;
@@ -194,15 +199,21 @@
     background-color: #f3f4f6;
     font-weight: 600;
     color: #374151;
+    white-space: nowrap;
 }
 
 .manage_book_table_container td {
     border-top: 1px solid #e5e7eb;
     color: #1f2937;
+    white-space: nowrap;
 }
 
 .manage_book_table_container tr:hover {
     background-color: #f9fafb;
+}
+
+.manage_book_on_sale {
+    background-color: #ecfdf5;
 }
 
 /* Action buttons */
@@ -213,6 +224,7 @@
     padding: 0.5rem;
     border-radius: 0.25rem;
     transition: background-color 0.2s;
+    margin-right: 0.25rem;
 }
 
 .manage_book_edit_button {
@@ -231,7 +243,39 @@
     background-color: #fef2f2;
 }
 
+.manage_book_add_discount_button {
+    color: #10b981;
+}
+
+.manage_book_add_discount_button:hover {
+    background-color: #ecfdf5;
+}
+
+.manage_book_remove_discount_button {
+    color: #f97316;
+}
+
+.manage_book_remove_discount_button:hover {
+    background-color: #fff7ed;
+}
+
 /* Responsive design */
+@media (max-width: 1024px) {
+    .manage_book_container {
+        padding: 1rem;
+    }
+
+    .manage_book_table_container th,
+    .manage_book_table_container td {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .manage_book_action_button {
+        padding: 0.3rem;
+    }
+}
+
 @media (max-width: 768px) {
     .manage_book_header {
         flex-direction: column;
@@ -248,9 +292,11 @@
         padding: 1.5rem;
     }
 
-    .manage_book_table_container th,
-    .manage_book_table_container td {
-        padding: 0.5rem;
-        font-size: 0.75rem;
+    .manage_book_table_container {
+        overflow-x: auto;
+    }
+
+    .manage_book_table_container table {
+        min-width: 1200px;
     }
 }

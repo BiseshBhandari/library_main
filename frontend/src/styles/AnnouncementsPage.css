@@ -1,0 +1,231 @@
+.announcement_container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    background-color: #f4f4f9;
+    min-height: 100vh;
+}
+
+.announcement_title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 24px;
+}
+
+.announcement_error {
+    background-color: #fff5f5;
+    border: 1px solid #feb2b2;
+    color: #c53030;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.announcement_create_button {
+    background-color: #3182ce;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 24px;
+    transition: background-color 0.2s;
+}
+
+.announcement_create_button:hover {
+    background-color: #2b6cb0;
+}
+
+.announcement_loading {
+    text-align: center;
+    font-size: 16px;
+    color: #4a5568;
+}
+
+.announcement_list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.announcement_empty {
+    color: #718096;
+    font-size: 16px;
+}
+
+.announcement_item {
+    background-color: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.announcement_item_title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.announcement_item_dates {
+    color: #718096;
+    font-size: 14px;
+    margin: 4px 0;
+}
+
+.announcement_item_status {
+    color: #718096;
+    font-size: 14px;
+}
+
+.announcement_item_actions {
+    display: flex;
+    gap: 8px;
+}
+
+.announcement_edit_button {
+    background-color: #d69e2e;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.announcement_edit_button:hover {
+    background-color: #b7791f;
+}
+
+.announcement_delete_button {
+    background-color: #c53030;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.announcement_delete_button:hover {
+    background-color: #9b2c2c;
+}
+
+.announcement_modal_backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.announcement_modal {
+    background-color: white;
+    padding: 24px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.announcement_modal_small {
+    max-width: 400px;
+}
+
+.announcement_modal_title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 16px;
+}
+
+.announcement_modal_text {
+    font-size: 16px;
+    color: #4a5568;
+    margin-bottom: 16px;
+}
+
+.announcement_form_group {
+    margin-bottom: 16px;
+}
+
+.announcement_form_label {
+    display: block;
+    font-size: 14px;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.announcement_form_textarea,
+.announcement_form_input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #2d3748;
+}
+
+.announcement_form_textarea:focus,
+.announcement_form_input:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.announcement_form_checkbox_label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #2d3748;
+}
+
+.announcement_form_checkbox {
+    margin-right: 8px;
+}
+
+.announcement_form_actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.announcement_cancel_button {
+    background-color: #e2e8f0;
+    color: #2d3748;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.announcement_cancel_button:hover {
+    background-color: #cbd5e0;
+}
+
+.announcement_submit_button {
+    background-color: #3182ce;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.announcement_submit_button:hover {
+    background-color: #2b6cb0;
+}
+
+.announcement_submit_button:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+}
