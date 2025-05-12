@@ -1,0 +1,284 @@
+/* Checkout & Orders Page Styles */
+
+/* Import Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;500;700&family=Orbitron:wght@400;500;700&display=swap");
+
+/* Color Variables */
+:root {
+  --fortress-white: #f4f4f9;
+  --sky-blue: #d6ecff;
+  --hero-blue: #0050a0;
+  --cape-red: #d62828;
+  --laser-gold: #ffcc00;
+  --solar-blue: #3399ff;
+  --hope-green: #4caf50;
+  --kryptonite-lime: #aeea00;
+  --heroic-black: #111111;
+  --steel-gray: #444444;
+}
+
+/* Container Layout */
+.checkout-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--fortress-white);
+}
+
+.checkout-main {
+  flex: 1;
+  padding: 20px;
+  margin-left: 250px;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 30px;
+}
+
+.page-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 36px;
+  color: var(--hero-blue);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  position: relative;
+  display: inline-block;
+}
+
+.page-title::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--laser-gold);
+  border-radius: 2px;
+}
+
+.order-status {
+  background-color: var(--sky-blue);
+  color: var(--hero-blue);
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+/* Orders Section */
+.orders-section {
+  background-color: white;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--steel-gray);
+  font-size: 18px;
+}
+
+.error-message {
+  background-color: rgba(214, 40, 40, 0.1);
+  color: var(--cape-red);
+  padding: 15px 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--steel-gray);
+  text-align: center;
+}
+
+.empty-icon {
+  color: var(--hero-blue);
+  opacity: 0.5;
+  margin-bottom: 20px;
+}
+
+/* Orders Grid */
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+/* Order Card */
+.order-card {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-top: 4px solid var(--hero-blue);
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 80, 160, 0.15);
+}
+
+.order-card.completed {
+  border-top-color: var(--hope-green);
+}
+
+.order-card.cancelled {
+  border-top-color: var(--cape-red);
+}
+
+.order-card.pending {
+  border-top-color: var(--laser-gold);
+}
+
+/* Order Header */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: var(--fortress-white);
+}
+
+.order-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.status-icon.completed {
+  color: var(--hope-green);
+}
+
+.status-icon.cancelled {
+  color: var(--cape-red);
+}
+
+.status-icon.pending {
+  color: var(--laser-gold);
+}
+
+.status-text {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.status-text.completed {
+  color: var(--hope-green);
+}
+
+.status-text.cancelled {
+  color: var(--cape-red);
+}
+
+.status-text.pending {
+  color: var(--hero-blue);
+}
+
+.order-date {
+  color: var(--steel-gray);
+  font-size: 14px;
+}
+
+/* Order Content */
+.order-content {
+  padding: 20px;
+}
+
+.order-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-group label {
+  color: var(--steel-gray);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.claim-code {
+  font-family: "Orbitron", monospace;
+  font-weight: 600;
+  color: var(--hero-blue);
+  letter-spacing: 1px;
+}
+
+.order-price {
+  font-weight: 700;
+  color: var(--hero-blue);
+  font-size: 18px;
+}
+
+/* Order Footer */
+.order-footer {
+  padding: 15px 20px;
+  border-top: 1px solid var(--fortress-white);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cancel-button {
+  background-color: var(--cape-red);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cancel-button:hover {
+  background-color: #b52121;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(214, 40, 40, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .checkout-main {
+    margin-left: 80px;
+    padding: 15px;
+  }
+
+  .orders-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 28px;
+  }
+
+  .orders-section {
+    padding: 15px;
+  }
+
+  .order-card {
+    min-width: 100%;
+  }
+}

@@ -1,0 +1,267 @@
+/* Review Page Styles */
+
+/* Import Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;500;700&family=Orbitron:wght@400;500;700&display=swap");
+
+/* Color Variables */
+:root {
+  --fortress-white: #f4f4f9;
+  --sky-blue: #d6ecff;
+  --hero-blue: #0050a0;
+  --cape-red: #d62828;
+  --laser-gold: #ffcc00;
+  --solar-blue: #3399ff;
+  --hope-green: #4caf50;
+  --kryptonite-lime: #aeea00;
+  --heroic-black: #111111;
+  --steel-gray: #444444;
+}
+
+/* Container Layout */
+.cart-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--fortress-white);
+}
+
+.cart-main {
+  flex: 1;
+  padding: 20px;
+  margin-left: 250px;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--steel-gray);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 80, 160, 0.1);
+  border-left-color: var(--hero-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error Message */
+.error-message {
+  background-color: rgba(214, 40, 40, 0.1);
+  color: var(--cape-red);
+  padding: 15px 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+/* Review Container */
+.review-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Review Header */
+.review-header {
+  margin-bottom: 30px;
+}
+
+.review-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 36px;
+  color: var(--hero-blue);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  position: relative;
+  display: inline-block;
+}
+
+.review-title::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--laser-gold);
+  border-radius: 2px;
+}
+
+/* Empty State */
+.empty-reviews {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--steel-gray);
+  text-align: center;
+}
+
+.empty-icon {
+  color: var(--hero-blue);
+  opacity: 0.5;
+  margin-bottom: 20px;
+}
+
+/* Review Grid */
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+/* Review Card */
+.review-card {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 80, 160, 0.15);
+}
+
+/* Book Image */
+.book-image-container {
+  height: 200px;
+  overflow: hidden;
+}
+
+.book-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.review-card:hover .book-image {
+  transform: scale(1.05);
+}
+
+/* Book Content */
+.book-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.book-title {
+  font-family: "Bebas Neue", sans-serif;
+  color: var(--hero-blue);
+  font-size: 22px;
+  margin: 0 0 8px 0;
+  letter-spacing: 0.5px;
+}
+
+.book-author {
+  color: var(--steel-gray);
+  margin: 0 0 12px 0;
+  font-size: 14px;
+}
+
+.book-price {
+  font-weight: bold;
+  font-size: 18px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: var(--steel-gray);
+  font-size: 14px;
+}
+
+.discounted-price {
+  color: var(--cape-red);
+}
+
+/* Star Rating */
+.star-rating {
+  margin-bottom: 15px;
+}
+
+.star {
+  color: #ccc;
+  font-size: 18px;
+}
+
+.star.filled {
+  color: var(--laser-gold);
+}
+
+/* Review Button */
+.review-button {
+  margin-top: auto;
+  background-color: var(--hero-blue);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.review-button:hover {
+  background-color: var(--solar-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 80, 160, 0.2);
+}
+
+.review-icon {
+  color: var(--laser-gold);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cart-main {
+    margin-left: 80px;
+    padding: 15px;
+  }
+
+  .review-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  .review-title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .review-container {
+    padding: 15px;
+  }
+
+  .review-grid {
+    grid-template-columns: 1fr;
+  }
+}

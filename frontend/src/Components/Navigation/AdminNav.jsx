@@ -6,16 +6,24 @@ import {
     FaBars,
 } from 'react-icons/fa';
 import { MdAnnouncement } from "react-icons/md";
-
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../../styles/AdminNav.css';
 
 function AdminNav() {
     const location = useLocation();
+    const navigate = useNavigate();
     const currentPath = location.pathname;
     const [isOpen, setIsOpen] = useState(true);
 
     const toggleSidebar = () => setIsOpen(!isOpen);
+
+    const handleLogout = () => {
+        // Clear all localStorage data
+        localStorage.clear();
+
+        // Redirect to login page
+        navigate('/login');
+    };
 
     return (
         <div className={`admin_nav_sidebar ${isOpen ? 'admin_nav_open' : 'admin_nav_collapsed'}`}>
@@ -23,7 +31,7 @@ function AdminNav() {
                 <FaBars />
             </div>
 
-            <Link to="*" className={`admin_nav_sidebar_item ${currentPath === '*' ? 'admin_nav_active' : ''}`}>
+            <Link to="/admin/admindashboard" className={`admin_nav_sidebar_item ${currentPath === '/admin/admindashboard' ? 'admin_nav_active' : ''}`}>
                 <FaTachometerAlt />
                 {isOpen && <span>Dashboard</span>}
             </Link>
@@ -35,10 +43,14 @@ function AdminNav() {
                 <MdAnnouncement />
                 {isOpen && <span>Banner</span>}
             </Link>
-            <Link to="/logout" className={`admin_nav_sidebar_item ${currentPath === '/logout' ? 'admin_nav_active' : ''}`}>
+            <div
+                onClick={handleLogout}
+                className={`admin_nav_sidebar_item ${currentPath === '/logout' ? 'admin_nav_active' : ''}`}
+                style={{ cursor: 'pointer' }}
+            >
                 <FaSignOutAlt />
                 {isOpen && <span>Logout</span>}
-            </Link>
+            </div>
         </div>
     );
 }

@@ -1,62 +1,49 @@
-// import { Link } from 'react-router-dom';
-// import { FaHome, FaSearch, FaBookmark, FaBox, FaUser } from 'react-icons/fa';
-// import "../../styles/MemberSide.css";
-
-// export default function MemberSide() {
-//   return (
-//     <div className="sidebar">
-//       <div>
-//         <h1 className="logo">BookHaven</h1>
-//         <nav className="nav-links">
-//           <Link to="/member-landing" className="nav-item"><FaHome />Home</Link>
-//           <Link to="/browse" className="nav-item"><FaSearch /><span>Browse</span></Link>
-//         </nav>
-//         <div className="library-links">
-//           <Link to="/bookmark" className="nav-item"><FaBookmark /><span>Bookmark</span></Link>
-//           <Link to="/orders" className="nav-item"><FaBox /><span>Orders</span></Link>
-//           <Link to="/profile" className="nav-item"><FaUser /><span>Profile</span></Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-import { Link } from 'react-router-dom';
-import { FaHome, FaSearch, FaBookmark, FaBox, FaUser } from 'react-icons/fa';
-import "../../styles/MemberSide.css";
+import { Link } from "react-router-dom"
+import { FaHome, FaSearch, FaBookmark, FaBox, FaShieldAlt } from "react-icons/fa"
+import "../../styles/MemberSide.css"
 
 export default function MemberSide() {
   return (
-    <div className="member_side_container">
-      <div className="member_side_wrapper">
-        <h1 className="member_side_logo">BookHaven</h1>
+    <div className="superman-side-container">
+      <div className="superman-side-wrapper">
+        <h1 className="superman-side-logo">
+          <span className="superman-logo-text">BookHaven</span>
+          <FaShieldAlt className="superman-logo-icon" />
+        </h1>
 
-        <nav className="member_side_nav">
-          <Link to="/member-landing" className="member_side_nav_item">
-            <span className="member_side_icon"><FaHome /></span>
-            <span className="member_side_label">Home</span>
+        <nav className="superman-side-nav">
+          <Link to="/member/member-landing" className="superman-side-nav-item">
+            <span className="superman-side-icon">
+              <FaHome />
+            </span>
+            <span className="superman-side-label">Home page</span>
           </Link>
-          <Link to="/browse" className="member_side_nav_item">
-            <span className="member_side_icon"><FaSearch /></span>
-            <span className="member_side_label">Browse</span>
+          <Link to="/bookmark" className="superman-side-nav-item">
+            <span className="superman-side-icon">
+              <FaBookmark />
+            </span>
+            <span className="superman-side-label">Saved</span>
           </Link>
         </nav>
 
-        <div className="member_side_library">
-          <Link to="/bookmark" className="member_side_nav_item">
-            <span className="member_side_icon"><FaBookmark /></span>
-            <span className="member_side_label">Bookmark</span>
+        <div className="superman-side-divider"></div>
+
+        <div className="superman-side-library">
+          <h2 className="superman-side-section-title">Hero Profile</h2>
+          <Link to="/orders" className="superman-side-nav-item">
+            <span className="superman-side-icon">
+              <FaBox />
+            </span>
+            <span className="superman-side-label">Orders</span>
           </Link>
-          <Link to="/orders" className="member_side_nav_item">
-            <span className="member_side_icon"><FaBox /></span>
-            <span className="member_side_label">Orders</span>
-          </Link>
-          <Link to="/profile" className="member_side_nav_item">
-            <span className="member_side_icon"><FaUser /></span>
-            <span className="member_side_label">Profile</span>
+          <Link to="/review" className="superman-side-nav-item">
+            <span className="superman-side-icon">
+              <FaSearch />
+            </span>
+            <span className="superman-side-label">Reviews</span>
           </Link>
         </div>
       </div>
     </div>
-  );
+  )
 }

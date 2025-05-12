@@ -1,75 +1,3 @@
-// using System;
-// using System.Threading.Tasks;
-// using Microsoft.AspNetCore.Mvc;
-// using Server.DTOs.Request;
-// using Server.DTOs.Response;
-// using Server.Service;
-
-
-// namespace Server.Controllers
-// {
-//     [ApiController]
-//     [Route("api/users/{userId}/cart")]
-//     public class CartController : ControllerBase
-//     {
-//         private readonly ICartService _cartService;
-
-//         public CartController(ICartService cartService)
-//         {
-//             _cartService = cartService;
-//         }
-
-//         [HttpGet]
-//         public async Task<ActionResult<CartResponseDTO>> GetCart(Guid userId)
-//         {
-//             var cart = await _cartService.GetCartAsync(userId);
-//             return Ok(cart);
-//         }
-
-//         [HttpPost("items")]
-//         public async Task<ActionResult<CartResponseDTO>> AddCartItem(Guid userId, [FromBody] AddToCartItemRequestDTO request)
-//         {
-//             try
-//             {
-//                 var cart = await _cartService.AddCartItemAsync(userId, request);
-//                 return Ok(cart);
-//             }
-//             catch (Exception ex)
-//             {
-//                 return BadRequest(ex);
-//             }
-//         }
-
-//         [HttpPut("items/{cartItemId}")]
-//         public async Task<ActionResult<CartResponseDTO>> UpdateCartItem(Guid userId, Guid cartItemId, [FromBody] UpdateCartItemRequestDTO request)
-//         {
-//             try
-//             {
-//                 var cart = await _cartService.UpdateCartItemAsync(userId, cartItemId, request);
-//                 return Ok(cart);
-//             }
-//             catch (Exception ex)
-//             {
-//                 return BadRequest(ex.Message);
-//             }
-//         }
-
-//         [HttpDelete("items/{cartItemId}")]
-//         public async Task<ActionResult<CartResponseDTO>> DeleteCartItem(Guid userId, Guid cartItemId)
-//         {
-//             try
-//             {
-//                 var cart = await _cartService.DeleteCartItemAsync(userId, cartItemId);
-//                 return Ok(cart);
-//             }
-//             catch (Exception ex)
-//             {
-//                 return BadRequest(ex.Message);
-//             }
-//         }
-//     }
-// }
-
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -150,6 +78,21 @@ namespace Server.Controllers
             {
                 _logger.LogError(ex, "Error deleting cart item {CartItemId} for user {UserId}", cartItemId, userId);
                 return BadRequest(new { Message = "Failed to delete cart item: " + ex.Message });
+            }
+        }
+
+        [HttpDelete("items")]
+        public async Task<ActionResult<CartResponseDTO>> ClearCart(Guid userId)
+        {
+            try
+            {
+                var cart = await _cartService.ClearCartAsync(userId);
+                return Ok(cart);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error clearing cart for user {UserId}", userId);
+                return BadRequest(new { Message = "Failed to clear cart: " + ex.Message });
             }
         }
     }

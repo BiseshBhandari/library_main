@@ -70,7 +70,22 @@ public class OrderService : IOrderService
                 throw new Exception($"Insufficient inventory for book: {book.Title}");
         }
 
+        // Calculate total price
         var totalPrice = request.Items.Sum(i => i.Price * i.Quantity);
+
+        // Apply 5% discount if the user is buying 5 or more books
+        var totalBooks = request.Items.Sum(i => i.Quantity);
+        if (totalBooks >= 5)
+        {
+            totalPrice *= 0.95m; // Apply 5% discount
+        }
+
+        // Check if the user has 10 or more successful orders
+        var successfulOrdersCount = user.Orders.Count(o => o.Status == "Complete");
+        if (successfulOrdersCount >= 10)
+        {
+            totalPrice *= 0.90m; // Apply an additional 10% discount
+        }
 
         var order = new Order
         {

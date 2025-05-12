@@ -1,126 +1,172 @@
-/* .sidebar {
-    width: 20%;
-    border-right: 1px solid #ddd;
-    padding: 20px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  .logo {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 30px;
-  }
-  
-  .nav-links,
-  .library-links {
-    margin-bottom: 20px;
-  }
-  
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    cursor: pointer;
-  } */
+/* Superman-Themed Sidebar Styles */
 
-.member_side_container {
-  width: 250px;
-  height: 100vh;
-  background-color: #2C4A52;
-  padding: 2rem 1rem;
-  left: 0;
-  top: 0;
+/* Import Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;500;700&family=Orbitron:wght@400;500;700&display=swap");
+
+/* Color Variables */
+:root {
+  --fortress-white: #f4f4f9;
+  --sky-blue: #d6ecff;
+  --hero-blue: #0050a0;
+  --cape-red: #d62828;
+  --laser-gold: #ffcc00;
+  --solar-blue: #3399ff;
+  --hope-green: #4caf50;
+  --kryptonite-lime: #aeea00;
+  --heroic-black: #111111;
+  --steel-gray: #444444;
 }
 
-.member_side_wrapper {
+/* Sidebar Container */
+.superman-side-container {
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(to bottom, var(--hero-blue), #003b75);
+  color: white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.superman-side-wrapper {
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 2rem;
+  padding: 30px 20px;
 }
 
-.member_side_logo {
-  color: #F4F1EA;
-  font-size: 1.8rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 2rem;
+/* Logo */
+.superman-side-logo {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 32px;
+  color: white;
+  margin-bottom: 40px;
   letter-spacing: 1px;
-}
-
-.member_side_nav,
-.member_side_library {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.member_side_library {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(244, 241, 234, 0.1);
-}
-
-.member_side_nav_item {
   display: flex;
   align-items: center;
-  padding: 0.8rem 1rem;
-  color: #F4F1EA;
-  text-decoration: none;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+}
+
+.superman-logo-text {
+  position: relative;
+  z-index: 1;
+}
+
+.superman-logo-text::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--laser-gold);
+  border-radius: 2px;
+}
+
+.superman-logo-icon {
+  color: var(--laser-gold);
+  font-size: 24px;
+}
+
+/* Navigation */
+.superman-side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.superman-side-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
   border-radius: 8px;
-  transition: all 0.3s ease;
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
 }
 
-.member_side_nav_item:hover {
-  background-color: #537072;
+.superman-side-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
   transform: translateX(5px);
+  box-shadow: -4px 0 0 var(--laser-gold);
 }
 
-.member_side_icon {
+.superman-side-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 24px;
   height: 24px;
-  margin-right: 12px;
+  color: var(--laser-gold);
+  font-size: 18px;
 }
 
-.member_side_label {
-  font-size: 1rem;
-  font-weight: 500;
+.superman-side-label {
+  font-size: 16px;
 }
 
-/* Active state styling */
-.member_side_nav_item.active {
-  background-color: #537072;
-  font-weight: 600;
+/* Divider */
+.superman-side-divider {
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--laser-gold), transparent);
+  margin: 10px 0 20px;
+  opacity: 0.6;
 }
 
-/* Responsive adjustments */
+/* Library Section */
+.superman-side-library {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.superman-side-section-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 20px;
+  color: var(--laser-gold);
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+  padding-left: 15px;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .member_side_container {
+  .superman-side-container {
     width: 80px;
-    padding: 2rem 0.5rem;
+    overflow: hidden;
   }
 
-  .member_side_logo {
-    font-size: 1.2rem;
+  .superman-side-logo {
+    font-size: 24px;
+    justify-content: center;
   }
 
-  .member_side_label {
+  .superman-logo-text {
     display: none;
   }
 
-  .member_side_nav_item {
-    justify-content: center;
-    padding: 0.8rem;
+  .superman-side-section-title {
+    display: none;
   }
 
-  .member_side_icon {
-    margin-right: 0;
+  .superman-side-label {
+    display: none;
+  }
+
+  .superman-side-nav-item {
+    justify-content: center;
+    padding: 15px 0;
+  }
+
+  .superman-side-icon {
+    font-size: 22px;
   }
 }

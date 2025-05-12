@@ -49,4 +49,5 @@ public class Book
     // public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     public ICollection<Whitelist> Whitelists { get; set; } = new List<Whitelist>();
 
+ public ICollection<Review> Reviews { get; set; } = new List<Review>(); // Added navigation property
 }

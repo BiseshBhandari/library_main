@@ -1,74 +1,231 @@
-.page-containe {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #fff;
+/* Superman-Themed Auth Styles */
+
+/* Import Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;500;700&family=Orbitron:wght@400;500;700&display=swap");
+
+/* Color Variables */
+:root {
+  --fortress-white: #f4f4f9;
+  --sky-blue: #d6ecff;
+  --hero-blue: #0050a0;
+  --cape-red: #d62828;
+  --laser-gold: #ffcc00;
+  --solar-blue: #3399ff;
+  --hope-green: #4caf50;
+  --kryptonite-lime: #aeea00;
+  --heroic-black: #111111;
+  --steel-gray: #444444;
+  --shadow-color: rgba(0, 80, 160, 0.2);
 }
 
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: var(--fortress-white);
+  color: var(--heroic-black);
+}
+
+/* Page Container */
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--hero-blue) 0%, #003366 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+/* Auth Card */
 .auth-card {
-    width: 100%;
-    max-width: 320px;
-    padding: 30px 20px;
-    box-shadow: none;
-    text-align: center;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 20px var(--shadow-color);
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  z-index: 1;
+  animation: card-appear 0.5s ease-out;
 }
 
+@keyframes card-appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Site Title */
 .site-title {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 25px;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.5rem;
+  color: var(--hero-blue);
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  position: relative;
+  display: inline-block;
+  width: 100%;
 }
 
+.site-title::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: var(--cape-red);
+}
+
+/* Auth Headings */
 .auth-heading {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 4px;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.8rem;
+  color: var(--heroic-black);
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 .auth-subtext {
-    font-size: 12px;
-    color: #444;
-    margin-bottom: 20px;
+  color: var(--steel-gray);
+  text-align: center;
+  margin-bottom: 30px;
 }
 
+/* Form Styles */
 .form-group {
-    margin-bottom: 10px;
+  margin-bottom: 20px;
+  position: relative;
 }
 
 .auth-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid rgba(0, 80, 160, 0.2);
+  border-radius: 6px;
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
+.auth-input:focus {
+  border-color: var(--hero-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 80, 160, 0.1);
+}
+
+.auth-input::placeholder {
+  color: #aaa;
+}
+
+/* Button Styles */
 .auth-button {
-    width: 100%;
-    background-color: #000;
-    color: #fff;
-    padding: 10px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    margin-top: 10px;
+  width: 100%;
+  padding: 12px;
+  background-color: var(--hero-blue);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 8px var(--shadow-color);
 }
 
+.auth-button:hover:not(:disabled) {
+  background-color: var(--solar-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px var(--shadow-color), 0 0 10px rgba(255, 204, 0, 0.3);
+}
+
+.auth-button:disabled {
+  background-color: var(--steel-gray);
+  cursor: not-allowed;
+}
+
+/* Links */
 .auth-link {
-    font-size: 12px;
-    margin-top: 12px;
-    color: #444;
+  text-align: center;
+  margin-top: 20px;
+  color: var(--steel-gray);
 }
 
 .link {
-    color: #000;
-    text-decoration: underline;
+  color: var(--hero-blue);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
+.link:hover {
+  color: var(--solar-blue);
+  text-decoration: underline;
+}
+
+/* Error Message */
 .error-message {
-    color: red;
-    font-size: 13px;
-    margin-bottom: 10px;
+  color: var(--cape-red);
+  font-size: 0.9rem;
+  margin-top: 5px;
+  padding: 8px 12px;
+  background-color: rgba(214, 40, 40, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid var(--cape-red);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 30px 20px;
+  }
+
+  .site-title {
+    font-size: 2rem;
+  }
+
+  .auth-heading {
+    font-size: 1.5rem;
+  }
+}
+
+/* Animation for focus states */
+.auth-input:focus {
+  animation: input-pulse 1s infinite alternate;
+}
+
+@keyframes input-pulse {
+  from {
+    box-shadow: 0 0 0 3px rgba(0, 80, 160, 0.1);
+  }
+  to {
+    box-shadow: 0 0 0 3px rgba(0, 80, 160, 0.2);
+  }
 }

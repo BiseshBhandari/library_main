@@ -1,38 +1,390 @@
+/* Superman-Themed Cart Page Styles */
+
+/* Base Container */
 .cart-container {
-    display: flex;
-    min-height: 100vh;
-  }
-  
-  
-  .cart-main {
-  
-      width: 80%;
-      padding: 30px;
-      box-sizing: border-box;
-    
-  }
-  
+  display: flex;
+  background-color: var(--fortress-white);
+  min-height: 100vh;
+  font-family: "Roboto", sans-serif;
+  color: var(--heroic-black);
+}
+
+.cart-main {
+  flex: 1;
+  padding: 20px;
+  margin-left: 250px;
+  /* Match sidebar width */
+}
+
+.cart-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+@media (min-width: 768px) {
   .cart-content {
-    display: flex;
-    gap: 32px;
-    padding: 24px;
+    flex-direction: row;
   }
-  
-  .cart-left {
-    flex: 1;
+}
+
+/* Cart Left Section */
+.cart-left {
+  flex: 2;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 80, 160, 0.2);
+  padding: 30px;
+}
+
+.cart-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.5rem;
+  color: var(--hero-blue);
+  margin: 0 0 10px 0;
+  letter-spacing: 1px;
+  position: relative;
+}
+
+.cart-title::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background-color: var(--cape-red);
+}
+
+.cart-subtitle {
+  color: var(--steel-gray);
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.empty-cart {
+  font-size: 1.2rem;
+  color: var(--steel-gray);
+  text-align: center;
+  padding: 40px 0;
+  font-style: italic;
+}
+
+/* Cart Right Section */
+.cart-right {
+  flex: 1;
+  align-self: flex-start;
+  position: sticky;
+  top: 20px;
+}
+
+/* Cart Item Styles */
+.cart-item {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(0, 80, 160, 0.1);
+  position: relative;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.item-image-container {
+  width: 100px;
+  height: 140px;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.item-image-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 80, 160, 0.3), 0 0 5px var(--laser-gold);
+}
+
+.item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-details {
+  flex: 2;
+  padding: 0 20px;
+}
+
+.item-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.4rem;
+  color: var(--hero-blue);
+  margin: 0 0 10px 0;
+}
+
+.item-subtitle {
+  color: var(--steel-gray);
+  font-size: 1rem;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: var(--steel-gray);
+  margin-right: 8px;
+}
+
+.discounted-price {
+  color: var(--cape-red);
+  font-weight: bold;
+}
+
+.regular-price {
+  color: var(--hero-blue);
+  font-weight: 500;
+}
+
+/* Quantity Controls */
+.item-quantity {
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.quantity-btn {
+  background-color: var(--hero-blue);
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-radius: 4px;
+}
+
+.quantity-btn:hover:not(:disabled) {
+  background-color: var(--solar-blue);
+}
+
+.quantity-btn:disabled {
+  background-color: var(--steel-gray);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.quantity-value {
+  width: 40px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.item-total {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--hero-blue);
+  width: 80px;
+  text-align: right;
+}
+
+.item-remove {
+  background-color: var(--cape-red);
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 15px;
+  transition: all 0.2s ease;
+}
+
+.item-remove:hover {
+  background-color: #b52121;
+  transform: scale(1.1);
+}
+
+/* Cart Summary Styles */
+.cart-summary {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 80, 160, 0.2);
+  padding: 25px;
+}
+
+.summary-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.8rem;
+  color: var(--hero-blue);
+  margin: 0 0 20px 0;
+  position: relative;
+  display: inline-block;
+}
+
+.summary-title::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: var(--cape-red);
+}
+
+.summary-details {
+  margin-top: 25px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 80, 160, 0.1);
+}
+
+.summary-row.total {
+  border-bottom: none;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--hero-blue);
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 2px solid rgba(0, 80, 160, 0.2);
+}
+
+.order-status {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: var(--sky-blue);
+  border-radius: 6px;
+  border-left: 4px solid var(--hero-blue);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.deploy-button {
+  background-color: var(--cape-red);
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(214, 40, 40, 0.3);
+}
+
+.deploy-button:hover:not(:disabled) {
+  background-color: #b52121;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(214, 40, 40, 0.4), 0 0 10px var(--laser-gold);
+}
+
+.checkout-button {
+  background-color: var(--hero-blue);
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 8px rgba(0, 80, 160, 0.3);
+}
+
+.checkout-button:hover:not(:disabled) {
+  background-color: var(--solar-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 80, 160, 0.4), 0 0 10px var(--laser-gold);
+}
+
+.deploy-button:disabled,
+.checkout-button:disabled {
+  background-color: var(--steel-gray);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+/* Error Message */
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.5rem;
+  color: var(--cape-red);
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(214, 40, 40, 0.1);
+  border-radius: 8px;
+  border: 2px solid var(--cape-red);
+  margin-left: 250px;
+  /* Match sidebar width */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .cart-main {
+    margin-left: 80px;
+    /* Match collapsed sidebar width */
   }
-  
-  .cart-left h1 {
-    font-size: 24px;
-    margin: 0;
+
+  .error {
+    margin-left: 80px;
+    /* Match collapsed sidebar width */
   }
-  
-  .cart-subtitle {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 16px;
+
+  .cart-content {
+    flex-direction: column;
   }
-  
-  .cart-right {
-    width: 320px;
+
+  .cart-item {
+    flex-wrap: wrap;
   }
+
+  .item-details {
+    flex: 1 0 calc(100% - 120px);
+    padding-right: 0;
+  }
+
+  .item-quantity {
+    margin: 15px 0 0 120px;
+  }
+
+  .item-total {
+    margin: 15px 0 0 20px;
+  }
+
+  .item-remove {
+    position: absolute;
+    top: 20px;
+    right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .item-image-container {
+    width: 80px;
+    height: 120px;
+  }
+
+  .item-quantity {
+    margin: 15px 0 0 100px;
+  }
+}

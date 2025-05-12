@@ -74,7 +74,7 @@ namespace Server.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<float?>("DiscountPercentage")
-                        .HasColumnType("real");
+                        .HasColumnType("float");
 
                     b.Property<DateTime?>("DiscountStart")
                         .HasColumnType("timestamp with time zone");
@@ -229,6 +229,37 @@ namespace Server.Migrations
                     b.ToTable("OrderItems");
                 });
 
+            modelBuilder.Entity("Server.Model.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("Server.Model.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -337,6 +368,25 @@ namespace Server.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Server.Model.Review", b =>
+                {
+                    b.HasOne("Server.Model.Book", "Book")
+                        .WithMany("Reviews")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Model.User", "User")
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Server.Model.Whitelist", b =>
                 {
                     b.HasOne("Server.Model.Book", "Book")
@@ -358,6 +408,8 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Model.Book", b =>
                 {
+                    b.Navigation("Reviews");
+
                     b.Navigation("Whitelists");
                 });
 
@@ -374,6 +426,8 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Model.User", b =>
                 {
                     b.Navigation("Orders");
+
+                    b.Navigation("Reviews");
 
                     b.Navigation("Whitelists");
                 });

@@ -12,12 +12,14 @@ import AnnouncementsPage from './pages/AdminPages/AnnouncementsPage';
 import AdminLayout from './layouts/AdminLayout';
 import StaffLayout from './layouts/StaffLayout';
 import MemberLayout from './layouts/MemberLayout';
-
+import Review from './pages/MemberPage/Review';
+import Comment from './pages/MemberPage/Comment';
+import Order from './pages/MemberPage/Order';
 import Bookmark from './pages/MemberPage/Bookmark';
 import CartPage from './pages/MemberPage/CartPage';
 import CheckoutPage from './pages/MemberPage/CheckoutOrder';
 import MemberLanding from './pages/MemberPage/MemberLanding';
-
+import AdminDashboard from './pages/AdminPages/AdminDashboard';
 
 function App() {
   return (
@@ -33,15 +35,19 @@ function App() {
           <Route path='/admin/*' element={<AdminLayout />}>
             <Route path="manage-book" element={<ManageBook />} />
             <Route path="announcements" element={<AnnouncementsPage />} />
+            <Route path="admindashboard" element={<AdminDashboard />} />
+            <Route path="*" element={<AdminDashboard />} />
+
           </Route>
 
           <Route path='/staff/*' element={<StaffLayout />}>
             <Route path="StaffDashboard" element={<StaffDashboard />} />
           </Route>
 
-          <Route path='/member/*' element={<MemberLayout />}>
-            <Route path="member-landing" element={<MemberLanding />} />
-          </Route>
+          <Route path="/member/member-landing" element={<MemberLanding />} />
+          <Route path="/review" element={<Review />} />
+          <Route path="/comment" element={<Comment />} />
+          <Route path="/orders" element={<Order />} />
 
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />

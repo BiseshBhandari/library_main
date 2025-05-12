@@ -1,94 +1,92 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import '../styles/Login.css'; // Reuse same styles for consistency
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import "../styles/Login.css" // Reuse same styles for consistency
 
-const API_URL = 'http://localhost:5001/api/auth';
+const API_URL = "http://localhost:5001/api/auth"
 
 function Register() {
     const [formData, setFormData] = useState({
-        fullName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-    });
+        fullName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+    })
 
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    const [errors, setErrors] = useState({})
+    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
 
     const validateForm = () => {
-        const newErrors = {};
+        const newErrors = {}
 
         if (formData.fullName.length > 100) {
-            newErrors.fullName = 'Full name cannot be longer than 100 characters.';
+            newErrors.fullName = "Full name cannot be longer than 100 characters."
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(formData.email)) {
-            newErrors.email = 'Invalid email address.';
+            newErrors.email = "Invalid email address."
         }
 
         if (formData.password.length < 8 || formData.password.length > 50) {
-            newErrors.password = 'Password must be between 8 and 50 characters.';
+            newErrors.password = "Password must be between 8 and 50 characters."
         }
 
         if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'The password and confirmation password do not match.';
+            newErrors.confirmPassword = "The password and confirmation password do not match."
         }
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
 
     const handleInputChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
-        });
-        setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
-    };
+        })
+        setErrors((prev) => ({ ...prev, [e.target.name]: "" }))
+    }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setErrors({});
-        setLoading(true);
+        e.preventDefault()
+        setErrors({})
+        setLoading(true)
 
         if (!validateForm()) {
-            setLoading(false);
-            return;
+            setLoading(false)
+            return
         }
 
         try {
             const response = await fetch(`${API_URL}/register`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(formData),
-            });
+            })
 
-            const data = await response.json();
+            const data = await response.json()
 
             if (!response.ok) {
-                throw new Error(data.message || 'Registration failed');
+                throw new Error(data.message || "Registration failed")
             }
 
-            navigate('/login');
+            navigate("/login")
         } catch (err) {
-            setErrors({ general: err.message });
+            setErrors({ general: err.message })
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     return (
-        <div className="page-containe">
+        <div className="page-container">
             <div className="auth-card">
                 <h1 className="site-title">BookHaven</h1>
                 <h2 className="auth-heading">Create your account</h2>
-                <p className="auth-subtext">
-                    Enter your information to register for BookHaven
-                </p>
+                <p className="auth-subtext">Enter your information to register for BookHaven</p>
 
                 {errors.general && <div className="error-message">{errors.general}</div>}
 
@@ -139,22 +137,22 @@ function Register() {
                             className="auth-input"
                             required
                         />
-                        {errors.confirmPassword && (
-                            <div className="error-message">{errors.confirmPassword}</div>
-                        )}
+                        {errors.confirmPassword && <div className="error-message">{errors.confirmPassword}</div>}
                     </div>
                     <button type="submit" disabled={loading} className="auth-button">
-                        {loading ? 'Registering...' : 'Register'}
+                        {loading ? "Registering..." : "Register"}
                     </button>
                 </form>
 
                 <p className="auth-link">
-                    Already have an account?{' '}
-                    <Link to="/login" className="link">Login</Link>
+                    Already have an account?{" "}
+                    <Link to="/login" className="link">
+                        Login
+                    </Link>
                 </p>
             </div>
         </div>
-    );
+    )
 }
 
-export default Register;
+export default Register

@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Server.Model;
 using System.IO;
-using Swashbuckle.AspNetCore.Annotations;
+using Server.Models;
 
 namespace Server.Controllers
 {
@@ -20,6 +20,7 @@ namespace Server.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly string _imagesPath;
+
         public BookController(ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
@@ -30,73 +31,45 @@ namespace Server.Controllers
             }
         }
 
-        // [HttpGet("getAllBooks")]
-        // public async Task<ActionResult<IEnumerable<BookResponseDTO>>> GetBooks()
-        // {
-        //     try
-        //     {
-        //         var books = await _context.Books.ToListAsync();
-        //         var now = DateTime.UtcNow;
-
-        //         var bookDtos = books.Select(b =>
-        //         {
-        //             // Check if the book is on sale and the discount is currently active
-        //             bool discountActive = b.IsOnSale &&
-        //                                   b.DiscountPercentage.HasValue &&
-        //                                   b.DiscountStart.HasValue &&
-        //                                   b.DiscountEnd.HasValue &&
-        //                                   b.DiscountStart.Value <= now &&
-        //                                   b.DiscountEnd.Value >= now;
-
-        //             // Calculate the effective price
-        //             decimal effectivePrice = discountActive
-        //                 ? Math.Round(b.Price * (1 - (decimal)b.DiscountPercentage.Value / 100), 2)
-        //                 : b.Price;
-
-        //             return new BookResponseDTO
-        //             {
-        //                 Id = b.Id,
-        //                 Title = b.Title,
-        //                 Author = b.Author,
-        //                 ISBN = b.ISBN,
-        //                 Genre = b.Genre,
-        //                 Description = b.Description,
-        //                 ImageUrl = b.ImageUrl,
-        //                 Price = b.Price,
-        //                 EffectivePrice = effectivePrice,
-        //                 InventoryCount = b.InventoryCount,
-        //                 IsOnSale = b.IsOnSale,
-        //                 DiscountPercentage = b.DiscountPercentage,
-        //                 DiscountStart = b.DiscountStart,
-        //                 DiscountEnd = b.DiscountEnd,
-        //                 CreatedAt = b.CreatedAt,
-        //                 UpdatedAt = b.UpdatedAt
-        //             };
-        //         }).ToList();
-
-        //         return Ok(bookDtos);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return StatusCode(StatusCodes.Status500InternalServerError,
-        //             new { message = "An error occurred while retrieving books", error = ex.Message });
-        //     }
-        // }
-
         [HttpGet("getAllBooks")]
-        public async Task<ActionResult<IEnumerable<BookResponseDTO>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<BookResponseDTO>>> GetBooks([FromQuery] Guid? userId)
         {
             try
             {
+                // Fetch all books
                 var books = await _context.Books.ToListAsync();
                 var now = DateTime.UtcNow;
 
+                // Calculate average ratings for all books
+                var averageRatings = await _context.Reviews
+                    .GroupBy(r => r.BookId)
+                    .Select(g => new
+                    {
+                        BookId = g.Key,
+                        AverageRating = g.Average(r => r.Rating)
+                    })
+                    .ToListAsync();
+
+                // Fetch user-specific ratings if userId is provided
+                var userReviews = new List<ReviewRating>();
+                if (userId.HasValue)
+                {
+                    userReviews = await _context.Reviews
+                        .Where(r => r.UserId == userId.Value)
+                        .GroupBy(r => r.BookId)
+                        .Select(g => new ReviewRating
+                        {
+                            BookId = g.Key,
+                            LatestRating = g.OrderByDescending(r => r.CreatedAt).First().Rating
+                        })
+                        .ToListAsync();
+                }
+
+                // Map books to DTOs
                 var bookDtos = books.Select(b =>
                 {
-                    // Check if discount is expired
+                    // Discount logic
                     bool isDiscountExpired = b.DiscountEnd.HasValue && b.DiscountEnd.Value < now;
-
-                    // Check if discount is active
                     bool discountActive = !isDiscountExpired &&
                                          b.IsOnSale &&
                                          b.DiscountPercentage.HasValue &&
@@ -105,10 +78,14 @@ namespace Server.Controllers
                                          b.DiscountStart.Value <= now &&
                                          b.DiscountEnd.Value >= now;
 
-                    // Calculate the effective price
                     decimal effectivePrice = discountActive
                         ? Math.Round(b.Price * (1 - (decimal)b.DiscountPercentage.Value / 100), 2)
                         : b.Price;
+
+                    // Determine rating: user-specific if userId exists, else average rating
+                    int rating = userId.HasValue
+                        ? (userReviews.FirstOrDefault(r => r.BookId == b.Id)?.LatestRating ?? 0)
+                        : (int)Math.Round(averageRatings.FirstOrDefault(a => a.BookId == b.Id)?.AverageRating ?? 0);
 
                     return new BookResponseDTO
                     {
@@ -127,7 +104,8 @@ namespace Server.Controllers
                         DiscountStart = isDiscountExpired ? null : b.DiscountStart,
                         DiscountEnd = isDiscountExpired ? null : b.DiscountEnd,
                         CreatedAt = b.CreatedAt,
-                        UpdatedAt = b.UpdatedAt
+                        UpdatedAt = b.UpdatedAt,
+                        Rating = rating
                     };
                 }).ToList();
 
@@ -139,7 +117,6 @@ namespace Server.Controllers
                     new { message = "An error occurred while retrieving books", error = ex.Message });
             }
         }
-
 
         [HttpPost("addBook")]
         public async Task<ActionResult<BookResponseDTO>> AddBook([FromForm] BookRequestDTO bookDto)
@@ -173,7 +150,6 @@ namespace Server.Controllers
                     ImageUrl = imageUrl,
                     Price = bookDto.Price,
                     InventoryCount = bookDto.InventoryCount,
-                    // IsOnSale = bookDto.IsOnSale,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -191,10 +167,12 @@ namespace Server.Controllers
                     Description = book.Description,
                     ImageUrl = book.ImageUrl,
                     Price = book.Price,
+                    EffectivePrice = book.Price,
                     InventoryCount = book.InventoryCount,
                     IsOnSale = book.IsOnSale,
                     CreatedAt = book.CreatedAt,
-                    UpdatedAt = book.UpdatedAt
+                    UpdatedAt = book.UpdatedAt,
+                    Rating = 0
                 };
 
                 return CreatedAtAction(nameof(GetBooks), new { id = book.Id }, bookResponse);
@@ -211,7 +189,6 @@ namespace Server.Controllers
         }
 
         [HttpPut("updateBook/{id}")]
-        // [Authorize]
         public async Task<ActionResult<BookResponseDTO>> UpdateBook(Guid id, [FromForm] BookUpdateRequestDTO bookDto)
         {
             if (!ModelState.IsValid)
@@ -233,13 +210,12 @@ namespace Server.Controllers
                 }
 
                 book.Title = bookDto.Title ?? book.Title;
-                book.Author = bookDto.Author ?? book.Author;
+                book.Author = bookDto.Author ?? book.Title;
                 book.ISBN = bookDto.ISBN ?? book.ISBN;
                 book.Genre = bookDto.Genre ?? book.Genre;
                 book.Description = bookDto.Description ?? book.Description;
                 book.Price = bookDto.Price ?? book.Price;
                 book.InventoryCount = bookDto.InventoryCount ?? book.InventoryCount;
-                // book.IsOnSale = bookDto.IsOnSale ?? book.IsOnSale;
 
                 if (bookDto.Image != null)
                 {
@@ -259,6 +235,19 @@ namespace Server.Controllers
                 _context.Books.Update(book);
                 await _context.SaveChangesAsync();
 
+                bool isDiscountExpired = book.DiscountEnd.HasValue && book.DiscountEnd.Value < DateTime.UtcNow;
+                bool discountActive = !isDiscountExpired &&
+                                     book.IsOnSale &&
+                                     book.DiscountPercentage.HasValue &&
+                                     book.DiscountStart.HasValue &&
+                                     book.DiscountEnd.HasValue &&
+                                     book.DiscountStart.Value <= DateTime.UtcNow &&
+                                     book.DiscountEnd.Value >= DateTime.UtcNow;
+
+                decimal effectivePrice = discountActive
+                    ? Math.Round(book.Price * (1 - (decimal)book.DiscountPercentage.Value / 100), 2)
+                    : book.Price;
+
                 var bookResponse = new BookResponseDTO
                 {
                     Id = book.Id,
@@ -269,10 +258,15 @@ namespace Server.Controllers
                     Description = book.Description,
                     ImageUrl = book.ImageUrl,
                     Price = book.Price,
+                    EffectivePrice = effectivePrice,
                     InventoryCount = book.InventoryCount,
-                    IsOnSale = book.IsOnSale,
+                    IsOnSale = isDiscountExpired ? false : book.IsOnSale,
+                    DiscountPercentage = isDiscountExpired ? null : book.DiscountPercentage,
+                    DiscountStart = isDiscountExpired ? null : book.DiscountStart,
+                    DiscountEnd = isDiscountExpired ? null : book.DiscountEnd,
                     CreatedAt = book.CreatedAt,
-                    UpdatedAt = book.UpdatedAt
+                    UpdatedAt = book.UpdatedAt,
+                    Rating = 0
                 };
 
                 return Ok(bookResponse);

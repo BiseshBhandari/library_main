@@ -1,0 +1,354 @@
+/* Superman-Themed Comment Page Styles */
+
+/* Base Container */
+.comment-section {
+  max-width: 900px;
+  margin: 20px auto;
+}
+
+.comment-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.5rem;
+  color: var(--hero-blue, #0050a0);
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  position: relative;
+  display: inline-block;
+}
+
+.comment-title::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background-color: var(--cape-red, #d62828);
+}
+
+/* Comment Card */
+.comment-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 80, 160, 0.2);
+  overflow: hidden;
+  margin-bottom: 30px;
+  animation: card-appear 0.5s ease-out;
+}
+
+@keyframes card-appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Book Info Section */
+.comment-book-info {
+  display: flex;
+  padding: 25px;
+  background-color: rgba(0, 80, 160, 0.05);
+  border-bottom: 1px solid rgba(0, 80, 160, 0.1);
+}
+
+.comment-book-cover {
+  flex-shrink: 0;
+  width: 120px;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.comment-book-cover:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.comment-book-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.comment-book-details {
+  margin-left: 25px;
+  flex: 1;
+}
+
+.comment-book-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.8rem;
+  color: var(--hero-blue, #0050a0);
+  margin: 0 0 10px;
+}
+
+.comment-book-author {
+  font-size: 1.1rem;
+  color: var(--steel-gray, #444444);
+  margin-bottom: 15px;
+}
+
+.comment-book-price {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--hero-blue, #0050a0);
+  margin-bottom: 10px;
+}
+
+.comment-book-genre {
+  display: inline-block;
+  background-color: var(--sky-blue, #d6ecff);
+  color: var(--hero-blue, #0050a0);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Comment Form */
+.comment-form {
+  padding: 25px;
+}
+
+.rating-container {
+  margin-bottom: 25px;
+}
+
+.rating-title {
+  font-size: 1.2rem;
+  color: var(--heroic-black, #111111);
+  margin-bottom: 15px;
+}
+
+.star-rating-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.star-rating {
+  display: flex;
+  gap: 5px;
+}
+
+.star {
+  font-size: 2.5rem;
+  cursor: pointer;
+  color: #ccc;
+  transition: all 0.2s ease;
+}
+
+.star.filled {
+  color: var(--laser-gold, #ffcc00);
+  text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+}
+
+.star.selected {
+  transform: scale(1.1);
+}
+
+.star:hover {
+  transform: scale(1.2);
+}
+
+.rating-label {
+  font-size: 1.1rem;
+  color: var(--hero-blue, #0050a0);
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.comment-textarea-container {
+  margin-bottom: 25px;
+}
+
+.comment-textarea-title {
+  font-size: 1.2rem;
+  color: var(--heroic-black, #111111);
+  margin-bottom: 15px;
+}
+
+.comment-textarea {
+  width: 100%;
+  min-height: 180px;
+  padding: 15px;
+  border: 1px solid rgba(0, 80, 160, 0.2);
+  border-radius: 8px;
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.comment-textarea:focus {
+  outline: none;
+  border-color: var(--hero-blue, #0050a0);
+  box-shadow: 0 0 0 3px rgba(0, 80, 160, 0.1);
+}
+
+.comment-textarea-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.character-count {
+  font-size: 0.9rem;
+  color: var(--steel-gray, #444444);
+}
+
+/* Messages */
+.comment-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  animation: message-appear 0.3s ease-out;
+}
+
+@keyframes message-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.comment-message.error {
+  background-color: rgba(214, 40, 40, 0.1);
+  border-left: 4px solid var(--cape-red, #d62828);
+}
+
+.comment-message.success {
+  background-color: rgba(76, 175, 80, 0.1);
+  border-left: 4px solid var(--hope-green, #4caf50);
+}
+
+.comment-message-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.comment-message.error .comment-message-icon {
+  background-color: var(--cape-red, #d62828);
+  color: white;
+}
+
+.comment-message.success .comment-message-icon {
+  background-color: var(--hope-green, #4caf50);
+  color: white;
+}
+
+.comment-message-text {
+  flex: 1;
+}
+
+/* Submit Button */
+.comment-submit-button {
+  background-color: var(--hero-blue, #0050a0);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 80, 160, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.comment-submit-button:hover:not(:disabled) {
+  background-color: var(--solar-blue, #3399ff);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 80, 160, 0.4), 0 0 10px rgba(255, 204, 0, 0.3);
+}
+
+.comment-submit-button:disabled {
+  background-color: var(--steel-gray, #444444);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.comment-submit-button.submitting {
+  background-color: var(--hero-blue, #0050a0);
+  opacity: 0.8;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .comment-book-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .comment-book-details {
+    margin-left: 0;
+    margin-top: 20px;
+  }
+
+  .star-rating-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .rating-label {
+    margin-left: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .comment-title {
+    font-size: 2rem;
+  }
+
+  .star {
+    font-size: 2rem;
+  }
+
+  .comment-book-cover {
+    width: 100px;
+    height: 150px;
+  }
+}
