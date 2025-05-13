@@ -246,3 +246,8 @@ E:\Library Management Application\Backend\Server\obj\Debug\net8.0\Server.sourcel
 E:\Library Management Application\Backend\Server\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
 E:\Library Management Application\Backend\Server\bin\Debug\net8.0\MailKit.dll
 E:\Library Management Application\Backend\Server\bin\Debug\net8.0\MimeKit.dll
+E:\Library Management Application\Backend\Server\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+E:\Library Management Application\Backend\Server\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
+E:\Library Management Application\Backend\Server\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
+E:\Library Management Application\Backend\Server\bin\Debug\net8.0\Newtonsoft.Json.dll
+E:\Library Management Application\Backend\Server\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
