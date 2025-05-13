@@ -1,52 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import { FaBookmark as Bookmarked, FaRegBookmark as Unbookmarked, FaShoppingCart, FaBell } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import NavBar from "../../Components/Navigation/MemberNav";
-import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
-import Swal from "sweetalert2";
-import { BookIcon, ShieldIcon, Zap, Search, Filter, ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import "../../styles/MemberLanding.css";
-import MemberSide from "../../Components/Navigation/MemberSide";
-import axios from 'axios';
+import { useState, useEffect } from "react"
+import { FaBookmark as Bookmarked, FaRegBookmark as Unbookmarked, FaShoppingCart, FaBell } from "react-icons/fa"
+import { useNavigate } from "react-router-dom"
+import NavBar from "../../Components/Navigation/MemberNav"
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr"
+import Swal from "sweetalert2"
+import { BookIcon, Zap, Search, Filter, ChevronLeft, ChevronRight, Star } from "lucide-react"
+import "../../styles/MemberLanding.css"
+import MemberSide from "../../Components/Navigation/MemberSide"
+import axios from "axios"
 
 export default function MemberLanding() {
-    const [books, setBooks] = useState([]);
-    const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
-    const [searchQuery, setSearchQuery] = useState("");
-    const [sortOption, setSortOption] = useState("");
-    const [inStockOnly, setInStockOnly] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState("");
-    const [genres, setGenres] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [announcements, setAnnouncements] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [activeIndex, setActiveIndex] = useState(0);
-    const itemsPerPage = 8;
-    const userId = localStorage.getItem("userId");
-    const token = localStorage.getItem("token");
-    const navigate = useNavigate();
-    const [closedAnnouncements, setClosedAnnouncements] = useState(new Set());
-    const [notifications, setNotifications] = useState([]);
-    const [showNotifications, setShowNotifications] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(0);
+    const [books, setBooks] = useState([])
+    const [bookmarkedIds, setBookmarkedIds] = useState(new Set())
+    const [searchQuery, setSearchQuery] = useState("")
+    const [sortOption, setSortOption] = useState("")
+    const [inStockOnly, setInStockOnly] = useState(false)
+    const [selectedCategory, setSelectedCategory] = useState("")
+    const [genres, setGenres] = useState([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const [announcements, setAnnouncements] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [activeIndex, setActiveIndex] = useState(0)
+    const itemsPerPage = 8
+    const userId = localStorage.getItem("userId")
+    const token = localStorage.getItem("token")
+    const navigate = useNavigate()
+    const [closedAnnouncements, setClosedAnnouncements] = useState(new Set())
+    const [notifications, setNotifications] = useState([])
+    const [showNotifications, setShowNotifications] = useState(false)
+    const [unreadCount, setUnreadCount] = useState(0)
+
+    // Ensure the calculateStarDistribution function is properly defined
+    const calculateStarDistribution = (reviewsArray) => {
+        const starCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+        reviewsArray.forEach((review) => {
+            const roundedRating = Math.round(review.rating)
+            if (starCounts[roundedRating] !== undefined) {
+                starCounts[roundedRating] += 1
+            }
+        })
+        return starCounts
+    }
 
     useEffect(() => {
         const fetchBooks = async () => {
-            setIsLoading(true);
+            setIsLoading(true)
             try {
                 const url = userId
                     ? `http://localhost:5001/api/Admin/Book/getAllBooks?userId=${userId}`
-                    : "http://localhost:5001/api/Admin/Book/getAllBooks";
+                    : "http://localhost:5001/api/Admin/Book/getAllBooks"
                 const response = await fetch(url, {
                     headers: {
                         ...(token && { Authorization: `Bearer ${token}` }),
                     },
-                });
-                if (!response.ok) throw new Error(`Failed to fetch books: ${response.status}`);
-                const data = await response.json();
-                const bookArray = data.$values || data;
+                })
+                if (!response.ok) throw new Error(`Failed to fetch books: ${response.status}`)
+                const data = await response.json()
+                const bookArray = data.$values || data
                 if (!Array.isArray(bookArray)) {
-                    throw new Error("Expected an array of books");
+                    throw new Error("Expected an array of books")
                 }
                 const mappedBooks = bookArray.map((book) => ({
                     id: book.id,
@@ -61,17 +73,18 @@ export default function MemberLanding() {
                     genre: book.genre || "Unknown",
                     inventoryCount: book.inventoryCount || 0,
                     rating: book.rating || 0,
-                }));
-                setBooks(mappedBooks);
-                const uniqueGenres = [...new Set(mappedBooks.map((book) => book.genre))];
-                setGenres(uniqueGenres);
+                    isbn: book.isbn || "",
+                    description: book.description || "",
+                }))
+                setBooks(mappedBooks)
+                const uniqueGenres = [...new Set(mappedBooks.map((book) => book.genre))]
+                setGenres(uniqueGenres)
             } catch (error) {
-                console.error("Error fetching books:", error);
-                setBooks([]);
+                setBooks([])
             } finally {
-                setIsLoading(false);
+                setIsLoading(false)
             }
-        };
+        }
 
         const fetchBookmarkedBooks = async () => {
             try {
@@ -79,192 +92,189 @@ export default function MemberLanding() {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                });
+                })
                 if (response.status === 404) {
-                    console.log("User not found or no bookmarks available");
-                    setBookmarkedIds(new Set());
-                    return;
+                    setBookmarkedIds(new Set())
+                    return
                 }
-                if (!response.ok) throw new Error(`Failed to fetch bookmarks: ${response.status}`);
-                const data = await response.json();
-                const bookmarkArray = data.$values || data;
+                if (!response.ok) throw new Error(`Failed to fetch bookmarks: ${response.status}`)
+                const data = await response.json()
+                const bookmarkArray = data.$values || data
                 if (!Array.isArray(bookmarkArray)) {
-                    console.warn("Bookmark data is not an array, setting empty bookmarks");
-                    setBookmarkedIds(new Set());
-                    return;
+                    setBookmarkedIds(new Set())
+                    return
                 }
-                const ids = new Set(bookmarkArray.map((item) => item.bookId));
-                setBookmarkedIds(ids);
+                const ids = new Set(bookmarkArray.map((item) => item.bookId))
+                setBookmarkedIds(ids)
             } catch (error) {
-                console.error("Error fetching bookmarked books:", error);
-                setBookmarkedIds(new Set());
+                setBookmarkedIds(new Set())
             }
-        };
+        }
 
         const fetchAnnouncements = async () => {
             try {
-                const response = await fetch("http://localhost:5001/api/announcements/get");
-                if (!response.ok) throw new Error(`Failed to fetch announcements: ${response.status}`);
-                const data = await response.json();
-                const announcementArray = data.$values || data;
+                const response = await fetch("http://localhost:5001/api/announcements/get")
+                if (!response.ok) throw new Error(`Failed to fetch announcements: ${response.status}`)
+                const data = await response.json()
+                const announcementArray = data.$values || data
                 if (!Array.isArray(announcementArray)) {
-                    console.warn("Announcement data is not an array, setting empty announcements");
-                    setAnnouncements([]);
-                    return;
+                    setAnnouncements([])
+                    return
                 }
-                setAnnouncements(announcementArray);
+                setAnnouncements(announcementArray)
             } catch (error) {
-                console.error("Error fetching announcements:", error);
-                setAnnouncements([]);
+                setAnnouncements([])
             }
-        };
-
-        fetchBooks();
-        fetchAnnouncements();
-        if (userId && token) {
-            fetchBookmarkedBooks();
-        } else {
-            console.log("No userId or token found, skipping bookmark fetch");
-            setBookmarkedIds(new Set());
         }
-    }, [userId, navigate, token]);
+
+        fetchBooks()
+        fetchAnnouncements()
+        if (userId && token) {
+            fetchBookmarkedBooks()
+        } else {
+            setBookmarkedIds(new Set())
+        }
+    }, [userId, navigate, token])
 
     useEffect(() => {
         if (announcements.length > 0) {
             const interval = setInterval(() => {
-                setActiveIndex((current) => (current + 1) % announcements.length);
-            }, 5000);
-            return () => clearInterval(interval);
+                setActiveIndex((current) => (current + 1) % announcements.length)
+            }, 5000)
+            return () => clearInterval(interval)
         }
-    }, [announcements]);
+    }, [announcements])
 
     useEffect(() => {
         const connection = new HubConnectionBuilder()
-            .withUrl('http://localhost:5001/hubs/notifications', {
+            .withUrl("http://localhost:5001/hubs/notifications", {
                 accessTokenFactory: () => token,
-                logger: LogLevel.Information
+                logger: LogLevel.Information,
             })
             .withAutomaticReconnect()
-            .build();
+            .build()
 
-        connection.start()
-            .then(() => {
-                console.log('Connected to SignalR hub');
-            })
-            .catch((error) => {
-                console.error('SignalR connection error:', error);
-            });
+        connection
+            .start()
+            .then(() => { })
+            .catch((error) => { })
 
         const handleNotification = (type, notification) => {
-            console.log(`${type} received:`, notification);
-            const bookTitles = notification.books.map(book => book.title).join(', ');
-            const message = `You have purchased: ${bookTitles}`;
+            const bookTitles = notification.books.map((book) => book.title).join(", ")
+            const message = `You have purchased: ${bookTitles}`
 
-            setNotifications(prev => [
+            setNotifications((prev) => [
                 {
                     id: notification.id, // Use ID from the database
                     type,
                     message,
-                    books: notification.books.map(book => book.title) || [],
+                    books: notification.books.map((book) => book.title) || [],
                     timestamp: notification.timestamp, // Use timestamp from the database
-                    read: notification.read || false
+                    read: notification.read || false,
                 },
-                ...prev
-            ]);
-            setUnreadCount(prev => prev + 1);
+                ...prev,
+            ])
+            setUnreadCount((prev) => prev + 1)
             Swal.fire({
-                icon: 'info',
+                icon: "info",
                 title: type,
                 html: `<p>${message}</p>`,
-                background: '#F4F4F9',
-                confirmButtonColor: '#0050A0',
-            });
-        };
+                background: "#F4F4F9",
+                confirmButtonColor: "#0050A0",
+            })
+        }
 
-        connection.on('OrderCompleted', (notification) => {
-            handleNotification('Order Completed', notification);
-        });
+        connection.on("OrderCompleted", (notification) => {
+            handleNotification("Order Completed", notification)
+        })
 
-        connection.on('TestNotification', (notification) => {
-            handleNotification('Test Notification', notification);
-        });
+        connection.on("TestNotification", (notification) => {
+            handleNotification("Test Notification", notification)
+        })
 
-        connection.on('UserNotification', (notification) => {
-            handleNotification('User Notification', notification);
-        });
+        connection.on("UserNotification", (notification) => {
+            handleNotification("User Notification", notification)
+        })
 
         return () => {
-            connection.stop().then(() => console.log('Disconnected from SignalR hub'));
-        };
-    }, [token]);
+            connection.stop().then(() => { })
+        }
+    }, [token])
 
     useEffect(() => {
         const fetchNotifications = async () => {
-            const storedUserId = localStorage.getItem("userId");
+            const storedUserId = localStorage.getItem("userId")
             if (!storedUserId) {
-                console.error("No userId found in local storage");
-                return;
+                return
             }
 
             try {
-                const response = await axios.get(`http://localhost:5001/api/notifications/user/${storedUserId}`);
-                const notificationsData = response.data.slice(0, 5); // Fetch only the latest 5 notifications
-                setNotifications(notificationsData);
-                setUnreadCount(notificationsData.filter(notification => !notification.read).length);
+                const response = await axios.get(`http://localhost:5001/api/notifications/user/${storedUserId}`)
+                const notificationsData = response.data.slice(0, 5) // Fetch only the latest 5 notifications
+                setNotifications(notificationsData)
+                setUnreadCount(notificationsData.filter((notification) => !notification.read).length)
             } catch (error) {
-                console.error("Error fetching notifications:", error);
-                setNotifications([]);
+                setNotifications([])
             }
-        };
+        }
 
-        fetchNotifications();
-    }, []);
+        fetchNotifications()
+    }, [])
+
+    useEffect(() => {
+        const fetchReviewsAndCalculateStars = async () => {
+            try {
+                const response = await fetch(`http://localhost:5001/api/reviews`) // Adjust endpoint as needed
+                if (!response.ok) throw new Error(`Failed to fetch reviews: ${response.status}`)
+                const reviewsData = await response.json()
+                const reviewsArray = Array.isArray(reviewsData) ? reviewsData : reviewsData.$values || []
+
+                // Calculate star distribution
+                const starDistribution = calculateStarDistribution(reviewsArray)
+            } catch (error) { }
+        }
+
+        fetchReviewsAndCalculateStars()
+    }, [])
 
     const clearNotifications = async () => {
-        const storedUserId = localStorage.getItem("userId");
+        const storedUserId = localStorage.getItem("userId")
         if (!storedUserId) {
-            console.error("No userId found in local storage");
-            return;
+            return
         }
 
         try {
-            await axios.delete(`http://localhost:5001/api/notifications/user/${storedUserId}`);
-            setNotifications([]);
-            setUnreadCount(0);
-            console.log("All notifications cleared successfully.");
-        } catch (error) {
-            console.error("Error clearing notifications:", error);
-        }
-    };
+            await axios.delete(`http://localhost:5001/api/notifications/user/${storedUserId}`)
+            setNotifications([])
+            setUnreadCount(0)
+        } catch (error) { }
+    }
 
     const toggleNotifications = async () => {
-        setShowNotifications(!showNotifications);
+        setShowNotifications(!showNotifications)
         if (!showNotifications) {
-            const storedUserId = localStorage.getItem("userId");
+            const storedUserId = localStorage.getItem("userId")
             if (!storedUserId) {
-                console.error("No userId found in local storage");
-                return;
+                return
             }
 
             try {
-                const response = await axios.get(`http://localhost:5001/api/notifications/user/${storedUserId}`);
-                const notificationsData = response.data.$values || response.data; // Handle $values property
+                const response = await axios.get(`http://localhost:5001/api/notifications/user/${storedUserId}`)
+                const notificationsData = response.data.$values || response.data // Handle $values property
                 if (Array.isArray(notificationsData)) {
-                    setNotifications(notificationsData);
-                    setNotifications(prev =>
-                        Array.isArray(prev) ? prev.map(notification => ({ ...notification, read: true })) : [] // Ensure prev is an array
-                    );
-                    setUnreadCount(0);
+                    setNotifications(notificationsData)
+                    setNotifications(
+                        (prev) => (Array.isArray(prev) ? prev.map((notification) => ({ ...notification, read: true })) : []), // Ensure prev is an array
+                    )
+                    setUnreadCount(0)
                 } else {
-                    console.error("Unexpected response format:", response.data);
-                    setNotifications([]); // Fallback to an empty array if the response is not an array
+                    setNotifications([]) // Fallback to an empty array if the response is not an array
                 }
             } catch (error) {
-                console.error("Error fetching notifications:", error);
-                setNotifications([]); // Fallback to an empty array in case of an error
+                setNotifications([]) // Fallback to an empty array in case of an error
             }
         }
-    };
+    }
 
     const handleToggle = async (bookId) => {
         if (!userId || !token) {
@@ -274,34 +284,33 @@ export default function MemberLanding() {
                 text: "Please log in to bookmark books.",
                 background: "#F4F4F9",
                 confirmButtonColor: "#0050A0",
-            });
-            navigate("/login");
-            return;
+            })
+            navigate("/login")
+            return
         }
 
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
-        };
+        }
 
         try {
             if (bookmarkedIds.has(bookId)) {
                 setBookmarkedIds((prev) => {
-                    const newSet = new Set(prev);
-                    newSet.delete(bookId);
-                    return newSet;
-                });
+                    const newSet = new Set(prev)
+                    newSet.delete(bookId)
+                    return newSet
+                })
 
                 const response = await fetch(`http://localhost:5001/api/Whitelist/user/${userId}/book/${bookId}`, {
                     method: "DELETE",
                     headers,
-                });
+                })
 
                 if (response.status === 404) {
-                    console.log("Bookmark not found on server, already removed");
                 } else if (!response.ok) {
-                    setBookmarkedIds((prev) => new Set(prev).add(bookId));
-                    throw new Error(`Failed to remove bookmark: ${response.status}`);
+                    setBookmarkedIds((prev) => new Set(prev).add(bookId))
+                    throw new Error(`Failed to remove bookmark: ${response.status}`)
                 } else {
                     Swal.fire({
                         icon: "success",
@@ -310,25 +319,25 @@ export default function MemberLanding() {
                         timer: 1500,
                         showConfirmButton: false,
                         background: "#F4F4F9",
-                    });
+                    })
                 }
             } else {
-                setBookmarkedIds((prev) => new Set(prev).add(bookId));
+                setBookmarkedIds((prev) => new Set(prev).add(bookId))
 
-                const requestBody = { userId, bookId };
+                const requestBody = { userId, bookId }
                 const response = await fetch("http://localhost:5001/api/Whitelist/add", {
                     method: "POST",
                     headers,
                     body: JSON.stringify(requestBody),
-                });
+                })
 
                 if (!response.ok) {
                     setBookmarkedIds((prev) => {
-                        const newSet = new Set(prev);
-                        newSet.delete(bookId);
-                        return newSet;
-                    });
-                    throw new Error(`Failed to add bookmark: ${response.status}`);
+                        const newSet = new Set(prev)
+                        newSet.delete(bookId)
+                        return newSet
+                    })
+                    throw new Error(`Failed to add bookmark: ${response.status}`)
                 } else {
                     Swal.fire({
                         icon: "success",
@@ -337,20 +346,19 @@ export default function MemberLanding() {
                         timer: 1500,
                         showConfirmButton: false,
                         background: "#F4F4F9",
-                    });
+                    })
                 }
             }
         } catch (error) {
-            console.error("Error in handleToggle:", error.message);
             Swal.fire({
                 icon: "error",
                 title: "Error",
                 text: `Failed to ${bookmarkedIds.has(bookId) ? "remove" : "add"} bookmark. Please try again.`,
                 background: "#F4F4F9",
                 confirmButtonColor: "#0050A0",
-            });
+            })
         }
-    };
+    }
 
     const handleAddToCart = async (bookId) => {
         if (!userId || !token) {
@@ -360,12 +368,12 @@ export default function MemberLanding() {
                 text: "Please log in to add items to cart.",
                 background: "#F4F4F9",
                 confirmButtonColor: "#0050A0",
-            });
-            navigate("/login");
-            return;
+            })
+            navigate("/login")
+            return
         }
 
-        const book = books.find((b) => b.id === bookId);
+        const book = books.find((b) => b.id === bookId)
         if (!book || book.inventoryCount === 0) {
             Swal.fire({
                 icon: "error",
@@ -373,8 +381,8 @@ export default function MemberLanding() {
                 text: "This item is currently out of stock.",
                 background: "#F4F4F9",
                 confirmButtonColor: "#0050A0",
-            });
-            return;
+            })
+            return
         }
 
         try {
@@ -382,18 +390,18 @@ export default function MemberLanding() {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-            });
+            })
 
             if (!cartResponse.ok) {
-                throw new Error(`Failed to fetch cart: ${cartResponse.status}`);
+                throw new Error(`Failed to fetch cart: ${cartResponse.status}`)
             }
 
-            const cartData = await cartResponse.json();
-            const cartItems = cartData.items.$values || cartData.items || [];
-            const cartItem = cartItems.find((item) => item.bookId === bookId);
-            const currentCartQuantity = cartItem ? cartItem.quantity : 0;
+            const cartData = await cartResponse.json()
+            const cartItems = cartData.items.$values || cartData.items || []
+            const cartItem = cartItems.find((item) => item.bookId === bookId)
+            const currentCartQuantity = cartItem ? cartItem.quantity : 0
 
-            const totalRequested = currentCartQuantity + 1;
+            const totalRequested = currentCartQuantity + 1
             if (totalRequested > book.inventoryCount) {
                 Swal.fire({
                     icon: "warning",
@@ -401,8 +409,8 @@ export default function MemberLanding() {
                     text: `Only ${book.inventoryCount - currentCartQuantity} items remain in stock.`,
                     background: "#F4F4F9",
                     confirmButtonColor: "#0050A0",
-                });
-                return;
+                })
+                return
             }
 
             const response = await fetch(`http://localhost:5001/api/users/${userId}/cart/items`, {
@@ -415,10 +423,10 @@ export default function MemberLanding() {
                     bookId,
                     quantity: 1,
                 }),
-            });
+            })
 
             if (!response.ok) {
-                throw new Error(`Failed to add to cart: ${response.status}`);
+                throw new Error(`Failed to add to cart: ${response.status}`)
             }
 
             Swal.fire({
@@ -428,30 +436,29 @@ export default function MemberLanding() {
                 timer: 1500,
                 showConfirmButton: false,
                 background: "#F4F4F9",
-            });
+            })
         } catch (error) {
-            console.error("Error adding to cart:", error.message);
             Swal.fire({
                 icon: "error",
                 title: "Error",
                 text: "Failed to add book to cart. Please try again.",
                 background: "#F4F4F9",
                 confirmButtonColor: "#0050A0",
-            });
+            })
         }
-    };
+    }
 
     const handleBookClick = (bookId) => {
-        navigate(`/book/${bookId}`);
-    };
+        navigate(`/book/${bookId}`)
+    }
 
     const handleCloseAnnouncement = (id) => {
-        setClosedAnnouncements(prev => {
-            const newSet = new Set(prev);
-            newSet.add(id);
-            return newSet;
-        });
-    };
+        setClosedAnnouncements((prev) => {
+            const newSet = new Set(prev)
+            newSet.add(id)
+            return newSet
+        })
+    }
 
     const renderNotifications = () => {
         return (
@@ -460,19 +467,25 @@ export default function MemberLanding() {
                     <p>No notifications available</p>
                 ) : (
                     notifications.map((notification) => (
-                        <div key={notification.id} className={`notification-item ${notification.read ? 'read' : 'unread'}`} style={{
-                            border: '1px solid #ccc',
-                            borderRadius: '5px',
-                            padding: '10px',
-                            marginBottom: '10px',
-                            backgroundColor: notification.read ? '#f9f9f9' : '#e6f7ff',
-                        }}>
-                            <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>{notification.message}</p>
-                            <p style={{ fontSize: '12px', color: '#888', marginBottom: '5px' }}>Date: {new Date(notification.createdAt).toLocaleString()}</p>
+                        <div
+                            key={notification.id}
+                            className={`notification-item ${notification.read ? "read" : "unread"}`}
+                            style={{
+                                border: "1px solid #ccc",
+                                borderRadius: "5px",
+                                padding: "10px",
+                                marginBottom: "10px",
+                                backgroundColor: notification.read ? "#f9f9f9" : "#e6f7ff",
+                            }}
+                        >
+                            <p style={{ fontWeight: "bold", marginBottom: "5px" }}>{notification.message}</p>
+                            <p style={{ fontSize: "12px", color: "#888", marginBottom: "5px" }}>
+                                Date: {new Date(notification.createdAt).toLocaleString()}
+                            </p>
                             {notification.books && notification.books.length > 0 && (
-                                <ul className="book-details" style={{ paddingLeft: '20px', margin: '0' }}>
+                                <ul className="book-details" style={{ paddingLeft: "20px", margin: "0" }}>
                                     {notification.books.map((book, index) => (
-                                        <li key={index} style={{ listStyleType: 'circle', marginBottom: '5px' }}>
+                                        <li key={index} style={{ listStyleType: "circle", marginBottom: "5px" }}>
                                             {book}
                                         </li>
                                     ))}
@@ -481,76 +494,86 @@ export default function MemberLanding() {
                         </div>
                     ))
                 )}
-                <button onClick={clearNotifications} className="clear-notifications-btn" style={{
-                    backgroundColor: '#0050A0',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '5px',
-                    padding: '10px 15px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    marginTop: '10px'
-                }}>Clear All Notifications</button>
+                <button
+                    onClick={clearNotifications}
+                    className="clear-notifications-btn"
+                    style={{
+                        backgroundColor: "#0050A0",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "5px",
+                        padding: "10px 15px",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        marginTop: "10px",
+                    }}
+                >
+                    Clear All Notifications
+                </button>
             </div>
-        );
-    };
+        )
+    }
 
     const filteredBooks = books
-        .filter((book) => book.title.toLowerCase().includes(searchQuery.toLowerCase()))
+        .filter((book) =>
+            book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            book.isbn?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            book.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
         .filter((book) => (inStockOnly ? book.inventoryCount > 0 : true))
         .filter((book) => {
             if (selectedCategory && selectedCategory !== "All Books") {
-                return book.genre === selectedCategory;
+                return book.genre === selectedCategory
             }
-            return true;
+            return true
         })
         .sort((a, b) => {
-            if (sortOption === "title-asc") return a.title.localeCompare(b.title);
-            if (sortOption === "title-desc") return b.title.localeCompare(a.title);
-            if (sortOption === "price-asc") return a.price - b.price;
-            if (sortOption === "price-desc") return b.price - a.price;
-            return 0;
-        });
+            if (sortOption === "title-asc") return a.title.localeCompare(b.title)
+            if (sortOption === "title-desc") return b.title.localeCompare(a.title)
+            if (sortOption === "price-asc") return a.effectivePrice - b.effectivePrice
+            if (sortOption === "price-desc") return b.effectivePrice - a.effectivePrice
+            return 0
+        })
 
-    const indexOfLastBook = currentPage * itemsPerPage;
-    const indexOfFirstBook = indexOfLastBook - itemsPerPage;
-    const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
-    const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
+    const indexOfLastBook = currentPage * itemsPerPage
+    const indexOfFirstBook = indexOfLastBook - itemsPerPage
+    const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook)
+    const totalPages = Math.ceil(filteredBooks.length / itemsPerPage)
 
     const getPageNumbers = () => {
-        const maxPagesToShow = 5;
-        const pageNumbers = [];
-        const halfRange = Math.floor(maxPagesToShow / 2);
+        const maxPagesToShow = 5
+        const pageNumbers = []
+        const halfRange = Math.floor(maxPagesToShow / 2)
 
-        let startPage = Math.max(1, currentPage - halfRange);
-        const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+        let startPage = Math.max(1, currentPage - halfRange)
+        const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1)
 
         if (endPage - startPage + 1 < maxPagesToShow) {
-            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+            startPage = Math.max(1, endPage - maxPagesToShow + 1)
         }
 
         for (let i = startPage; i <= endPage; i++) {
-            pageNumbers.push(i);
+            pageNumbers.push(i)
         }
 
         if (startPage > 1) {
-            pageNumbers.unshift("...");
-            pageNumbers.unshift(1);
+            pageNumbers.unshift("...")
+            pageNumbers.unshift(1)
         }
         if (endPage < totalPages) {
-            pageNumbers.push("...");
-            pageNumbers.push(totalPages);
+            pageNumbers.push("...")
+            pageNumbers.push(totalPages)
         }
 
-        return pageNumbers;
-    };
+        return pageNumbers
+    }
 
-    const now = new Date();
+    const now = new Date()
 
     const featuredBooks = books
         .filter((book) => book.isOnSale && book.discountStart <= now && book.discountEnd >= now)
-        .slice(0, 3);
+        .slice(0, 3)
 
     return (
         <>
@@ -559,34 +582,34 @@ export default function MemberLanding() {
                 <div className="landing-container">
                     <div className="nav-container">
                         <NavBar />
-                        <div className="notification-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+                        <div className="notification-wrapper" style={{ position: "relative", display: "inline-block" }}>
                             <button
                                 className="notification-btn"
                                 onClick={toggleNotifications}
                                 aria-label="View notifications"
                                 style={{
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    position: 'relative',
-                                    fontSize: '24px',
-                                    color: '#0050A0',
+                                    background: "none",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    position: "relative",
+                                    fontSize: "24px",
+                                    color: "#0050A0",
                                 }}
                             >
-                                <FaBell className="notification-icon" style={{ fontSize: '24px' }} />
+                                <FaBell className="notification-icon" style={{ fontSize: "24px" }} />
                                 {unreadCount > 0 && (
                                     <span
                                         className="notification-badge"
                                         style={{
-                                            position: 'absolute',
-                                            top: '-5px',
-                                            right: '-5px',
-                                            background: '#FF0000',
-                                            color: '#FFFFFF',
-                                            borderRadius: '50%',
-                                            padding: '5px 8px',
-                                            fontSize: '12px',
-                                            fontWeight: 'bold',
+                                            position: "absolute",
+                                            top: "-5px",
+                                            right: "-5px",
+                                            background: "#FF0000",
+                                            color: "#FFFFFF",
+                                            borderRadius: "50%",
+                                            padding: "5px 8px",
+                                            fontSize: "12px",
+                                            fontWeight: "bold",
                                         }}
                                     >
                                         {unreadCount}
@@ -613,36 +636,37 @@ export default function MemberLanding() {
                         </div>
                     </div>
 
-                    {announcements.length > 0 && announcements.some(a => !closedAnnouncements.has(a.id)) && (
+                    {announcements.length > 0 && announcements.some((a) => !closedAnnouncements.has(a.id)) && (
                         <div className="announcement-bar">
                             <div className="announcement-wrapper">
-                                {announcements.map((announcement, index) => (
-                                    !closedAnnouncements.has(announcement.id) && (
-                                        <div
-                                            key={announcement.id || index}
-                                            className={`announcement ${index === activeIndex ? "active" : ""}`}
-                                            style={{
-                                                opacity: index === activeIndex ? 1 : 0,
-                                                transform: `translateY(${index === activeIndex ? 0 : 20}px)`,
-                                                pointerEvents: index === activeIndex ? "auto" : "none"
-                                            }}
-                                        >
-                                            <ShieldIcon className="announcement-icon pulse" size={18} />
-                                            <span className="announcement-text">{announcement.message}</span>
-                                            <ShieldIcon className="announcement-icon pulse" size={18} />
-                                            <button
-                                                className="announcement-close"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleCloseAnnouncement(announcement.id || index);
+                                {announcements.map(
+                                    (announcement, index) =>
+                                        !closedAnnouncements.has(announcement.id) && (
+                                            <div
+                                                key={announcement.id || index}
+                                                className={`announcement ${index === activeIndex ? "active" : ""}`}
+                                                style={{
+                                                    opacity: index === activeIndex ? 1 : 0,
+                                                    transform: `translateY(${index === activeIndex ? 0 : 20}px)`,
+                                                    pointerEvents: index === activeIndex ? "auto" : "none",
                                                 }}
-                                                aria-label="Close announcement"
                                             >
-                                                ×
-                                            </button>
-                                        </div>
-                                    )
-                                ))}
+                                                <BookIcon className="announcement-icon pulse" size={18} />
+                                                <span className="announcement-text">{announcement.message}</span>
+                                                <BookIcon className="announcement-icon pulse" size={18} />
+                                                <button
+                                                    className="announcement-close"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleCloseAnnouncement(announcement.id || index)
+                                                    }}
+                                                    aria-label="Close announcement"
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
+                                        ),
+                                )}
                             </div>
                         </div>
                     )}
@@ -700,8 +724,8 @@ export default function MemberLanding() {
                                     placeholder="Search books..."
                                     value={searchQuery}
                                     onChange={(e) => {
-                                        setSearchQuery(e.target.value);
-                                        setCurrentPage(1);
+                                        setSearchQuery(e.target.value)
+                                        setCurrentPage(1)
                                     }}
                                     className="search-input"
                                 />
@@ -710,8 +734,8 @@ export default function MemberLanding() {
                                 className="sort-dropdown"
                                 value={sortOption}
                                 onChange={(e) => {
-                                    setSortOption(e.target.value);
-                                    setCurrentPage(1);
+                                    setSortOption(e.target.value)
+                                    setCurrentPage(1)
                                 }}
                             >
                                 <option value="">Sort By</option>
@@ -725,8 +749,8 @@ export default function MemberLanding() {
                                     type="checkbox"
                                     checked={inStockOnly}
                                     onChange={() => {
-                                        setInStockOnly(!inStockOnly);
-                                        setCurrentPage(1);
+                                        setInStockOnly(!inStockOnly)
+                                        setCurrentPage(1)
                                     }}
                                 />
                                 Available Only
@@ -736,8 +760,8 @@ export default function MemberLanding() {
                             <button
                                 className={`filter-btn ${selectedCategory === "" ? "active" : ""}`}
                                 onClick={() => {
-                                    setSelectedCategory("");
-                                    setCurrentPage(1);
+                                    setSelectedCategory("")
+                                    setCurrentPage(1)
                                 }}
                             >
                                 <Filter className="filter-icon" size={16} />
@@ -748,8 +772,8 @@ export default function MemberLanding() {
                                     key={idx}
                                     className={`filter-btn ${selectedCategory === genre ? "active" : ""}`}
                                     onClick={() => {
-                                        setSelectedCategory(genre);
-                                        setCurrentPage(1);
+                                        setSelectedCategory(genre)
+                                        setCurrentPage(1)
                                     }}
                                 >
                                     {genre}
@@ -826,8 +850,8 @@ export default function MemberLanding() {
                                                 <button
                                                     className="bookmark-btn"
                                                     onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleToggle(book.id);
+                                                        e.stopPropagation()
+                                                        handleToggle(book.id)
                                                     }}
                                                     aria-label={bookmarkedIds.has(book.id) ? "Remove from bookmarks" : "Add to bookmarks"}
                                                 >
@@ -840,8 +864,8 @@ export default function MemberLanding() {
                                                 <button
                                                     className="cart-btn"
                                                     onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleAddToCart(book.id);
+                                                        e.stopPropagation()
+                                                        handleAddToCart(book.id)
                                                     }}
                                                     disabled={book.inventoryCount === 0}
                                                     aria-label="Add to cart"
@@ -888,42 +912,8 @@ export default function MemberLanding() {
                             </div>
                         )}
                     </div>
-
-                    <footer className="footer">
-                        <div className="footer-content">
-                            <div className="footer-section">
-                                <h3>About Us</h3>
-                                <p>Your premier destination for quality books and literary treasures.</p>
-                            </div>
-                            <div className="footer-section">
-                                <h3>Quick Links</h3>
-                                <ul>
-                                    <li>
-                                        <button>Home</button>
-                                    </li>
-                                    <li>
-                                        <button>Browse</button>
-                                    </li>
-                                    <li>
-                                        <button>My Account</button>
-                                    </li>
-                                    <li>
-                                        <button>Contact Us</button>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div className="footer-section">
-                                <h3>Contact</h3>
-                                <p>Email: info@bookhaven.com</p>
-                                <p>Phone: (555) 123-4567</p>
-                            </div>
-                        </div>
-                        <div className="footer-bottom">
-                            <p>© {new Date().getFullYear()} BookHaven. All rights reserved.</p>
-                        </div>
-                    </footer>
                 </div>
             </div>
         </>
-    );
+    )
 }

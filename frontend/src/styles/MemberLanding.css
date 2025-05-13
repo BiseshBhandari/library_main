@@ -1,20 +1,4 @@
 /* Base Styles */
-/* :root {
-  --primary-color: #0050a0;
-  --secondary-color: #d62828;
-  --accent-color: #ffcc00;
-  --background-color: #f4f4f9;
-  --text-color: #111111;
-  --text-light: #444444;
-  --white: #ffffff;
-  --shadow-color: rgba(0, 80, 160, 0.2);
-  --success-color: #4caf50;
-  --error-color: #f44336;
-  --border-radius: 8px;
-  --transition-speed: 0.3s;
-} */
-
-/* Base Styles */
 :root {
   --primary-color: #0050a0;
   --secondary-color: #d62828;

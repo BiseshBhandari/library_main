@@ -55,7 +55,7 @@ namespace Server.Controllers
                     BookId = b.Id,
                     Title = b.Title,
                     Author = b.Author,
-                    ImageUrl = b.ImageUrl,
+                    ImageUrl = b.ImageUrl ?? string.Empty,
                     Price = b.Price,
                     EffectivePrice = b.IsOnSale &&
                                     b.DiscountStart.HasValue &&
@@ -122,6 +122,32 @@ namespace Server.Controllers
             };
 
             return CreatedAtAction(nameof(GetReviewableBooks), new { userId }, response);
+        }
+
+        // GET: api/reviews/{bookId}
+        [HttpGet("/api/reviews/{bookId}")]
+        public async Task<ActionResult<IEnumerable<ReviewResponseDTO>>> GetReviewsByBookId(Guid bookId)
+        {
+            var reviews = await _context.Reviews
+                .Where(r => r.BookId == bookId)
+                .Join(
+                    _context.Users, // Join with Users table
+                    review => review.UserId,
+                    user => user.Id,
+                    (review, user) => new { review, user.FullName } // Select review and user full name
+                )
+                .Select(r => new ReviewResponseDTO
+                {
+                    ReviewId = r.review.Id,
+                    BookId = r.review.BookId,
+                    Rating = r.review.Rating,
+                    Comment = r.review.Comment,
+                    CreatedAt = r.review.CreatedAt,
+                    ReviewerName = r.FullName // Map FullName to ReviewerName
+                })
+                .ToListAsync();
+
+            return Ok(reviews);
         }
     }
 }

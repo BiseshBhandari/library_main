@@ -7,7 +7,6 @@ import MemberSide from "../../Components/Navigation/MemberSide"
 import TopMenu from "../../Components/BookComponents/Topmenu"
 import MemberNav from "../../Components/Navigation/MemberNav"
 import Swal from "sweetalert2"
-import { motion, AnimatePresence } from "framer-motion"
 import "../../styles/BookDetail.css"
 
 const BookDetail = () => {
@@ -52,6 +51,7 @@ const BookDetail = () => {
         }
 
         const data = await response.json()
+        console.log("Book data:", data)
         if (!data || typeof data !== "object") {
           throw new Error("Invalid book data received from server")
         }
@@ -63,6 +63,7 @@ const BookDetail = () => {
           description: data.description,
           imageUrl: data.imageUrl,
           price: data.price || 0,
+          discountPercentage: data.discountPercentage || 0,
           effectivePrice: data.effectivePrice || data.price || 0,
           isOnSale: data.isOnSale || false,
           discountStart: data.discountStart ? new Date(data.discountStart) : null,
@@ -75,17 +76,35 @@ const BookDetail = () => {
           pages: data.pages || 0,
         })
 
-        const reviewsArray =
-          data.reviews && data.reviews.$values ? data.reviews.$values : Array.isArray(data.reviews) ? data.reviews : []
-        const formattedReviews = reviewsArray.map((review) => ({
-          id: review.reviewId,
-          reviewerName: review.reviewerName || "Anonymous",
-          rating: review.rating || 0,
-          comment: review.comment || "",
-          date: review.createdAt,
-        }))
+        // Calculate star distribution
+        const calculateStarDistribution = (reviewsArray) => {
+          const starCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+          reviewsArray.forEach((review) => {
+            const roundedRating = Math.round(review.rating)
+            if (roundedRating > 0 && starCounts[roundedRating] !== undefined) {
+              starCounts[roundedRating] += 1
+            }
+          })
+          return starCounts
+        }
 
-        setReviews(formattedReviews)
+        // Ensure `reviewsResponse` is properly scoped and defined
+        const reviewsResponse = await fetch(`http://localhost:5001/api/reviews/${id}`)
+        if (reviewsResponse.ok) {
+          const reviewsData = await reviewsResponse.json()
+          const reviewsArray = Array.isArray(reviewsData) ? reviewsData : reviewsData.$values || []
+          const formattedReviews = reviewsArray.map((review) => ({
+            id: review.reviewId,
+            reviewerName: review.reviewerName || "Anonymous",
+            rating: typeof review.rating === "number" && review.rating > 0 ? review.rating : 0,
+            comment: review.comment || "",
+            date: review.createdAt,
+          }))
+          setReviews(formattedReviews)
+
+          // Calculate and set star distribution
+          const starDistribution = calculateStarDistribution(formattedReviews)
+        }
 
         if (isLoggedIn) {
           const cartResponse = await fetch(`http://localhost:5001/api/users/${userId}/cart`, {
@@ -133,7 +152,6 @@ const BookDetail = () => {
         setError("")
         setLoading(false)
       } catch (error) {
-        console.error("Failed to fetch book or cart:", error)
         setError(error.message || "Could not load book details. Please try again.")
         setLoading(false)
       }
@@ -141,6 +159,23 @@ const BookDetail = () => {
 
     fetchBookAndCart()
   }, [id, userId, token, isLoggedIn])
+
+  useEffect(() => {
+    const fetchBookDetails = async () => {
+      try {
+        const response = await fetch(`http://localhost:5001/api/reviews/${id}`);
+        if (!response.ok) throw new Error(`Failed to fetch reviews: ${response.status}`);
+        const data = await response.json();
+        setReviews(data);
+      } catch (error) {
+        setError("Failed to load reviews.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookDetails();
+  }, [id]);
 
   const handleQuantityChange = (change) => {
     setQuantity((prev) => {
@@ -171,10 +206,6 @@ const BookDetail = () => {
     book.discountEnd >= now
   const displayPrice = book ? (isDiscountActive ? book.effectivePrice : book.price) : 0
   const totalPrice = book ? (displayPrice * quantity).toFixed(2) : "0.00"
-
-  // Calculate discount percentage
-  const discountPercentage =
-    book && isDiscountActive ? Math.round(((book.price - book.effectivePrice) / book.price) * 100) : 0
 
   const handleAddToCart = async () => {
     if (!isLoggedIn) {
@@ -264,7 +295,6 @@ const BookDetail = () => {
       setCartQuantity((prev) => prev + quantity)
       navigate("/cart")
     } catch (error) {
-      console.error("Error adding to cart:", error)
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -338,7 +368,6 @@ const BookDetail = () => {
         },
       })
     } catch (error) {
-      console.error("Error adding to cart for buy now:", error)
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -398,22 +427,14 @@ const BookDetail = () => {
       <div className="book-main">
         {isLoggedIn ? <MemberNav /> : <TopMenu />}
 
-        <motion.div
-          className="breadcrumb"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <span onClick={() => navigate("/")} className="breadcrumb-item">
-            Home
-          </span>
+        <div className="breadcrumb">
           <span className="breadcrumb-separator">/</span>
-          <span onClick={() => navigate(`/category/${book.genre}`)} className="breadcrumb-item">
+          <span onClick={() => navigate(`/member/member-landing`)} className="breadcrumb-item">
             {book.genre}
           </span>
           <span className="breadcrumb-separator">/</span>
           <span className="breadcrumb-item active">{book.title}</span>
-        </motion.div>
+        </div>
 
         <div className="book-content">
           <div className="left-section">
@@ -426,21 +447,17 @@ const BookDetail = () => {
                   e.currentTarget.onerror = null // Prevent infinite loop
                 }}
                 className="book-cover-large"
+                onClick={() => setShowImageModal(true)}
               />
               {isDiscountActive && (
                 <div className="discount-badge">
-                  {Math.round(((book.price - book.effectivePrice) / book.price) * 100)}% OFF
+                  {book.discountPercentage}% OFF
                 </div>
               )}
             </div>
           </div>
 
-          <motion.div
-            className="right-section"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="right-section">
             <h1 className="book-title">{book.title}</h1>
             <p className="book-author">
               By <span className="author-name">{book.author}</span>
@@ -503,23 +520,21 @@ const BookDetail = () => {
               <div className="quantity-section">
                 <label className="quantity-label">Quantity:</label>
                 <div className="quantity-controls">
-                  <motion.button
+                  <button
                     className="quantity-btn minus"
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity <= 1 || book.inventoryCount === 0}
-                    whileTap={{ scale: 0.9 }}
                   >
                     -
-                  </motion.button>
+                  </button>
                   <input type="number" value={quantity} readOnly className="quantity-input" />
-                  <motion.button
+                  <button
                     className="quantity-btn plus"
                     onClick={() => handleQuantityChange(1)}
                     disabled={quantity + cartQuantity >= book.inventoryCount || book.inventoryCount === 0}
-                    whileTap={{ scale: 0.9 }}
                   >
                     +
-                  </motion.button>
+                  </button>
                 </div>
               </div>
             )}
@@ -532,12 +547,10 @@ const BookDetail = () => {
             <div className="book-actions">
               {isLoggedIn ? (
                 <>
-                  <motion.button
+                  <button
                     className="add-to-cart-btn"
                     onClick={handleAddToCart}
                     disabled={book.inventoryCount === 0 || isAddingToCart}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                   >
                     {isAddingToCart ? (
                       <>
@@ -550,25 +563,14 @@ const BookDetail = () => {
                         <span>Add to Cart</span>
                       </>
                     )}
-                  </motion.button>
-                  <motion.button
-                    className="buy-now-btn"
-                    onClick={handleBuyNow}
-                    disabled={book.inventoryCount === 0}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
+                  </button>
+                  <button className="buy-now-btn" onClick={handleBuyNow} disabled={book.inventoryCount === 0}>
                     <span className="btn-icon buy"></span>
                     <span>Buy Now</span>
-                  </motion.button>
+                  </button>
                 </>
               ) : (
-                <motion.div
-                  className="login-message"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
+                <div className="login-message">
                   <p>
                     Please{" "}
                     <span onClick={() => navigate("/login")} className="login-link">
@@ -576,38 +578,11 @@ const BookDetail = () => {
                     </span>{" "}
                     to add items to your cart or buy now.
                   </p>
-                </motion.div>
+                </div>
               )}
             </div>
 
-            <div className="additional-info">
-              <div className="info-item">
-                <span className="info-icon returns"></span>
-                <div className="info-text">
-                  <span className="info-title">Easy Returns</span>
-                  <span className="info-desc">30 day return policy</span>
-                </div>
-              </div>
-              <div className="info-item">
-                <span className="info-icon secure"></span>
-                <div className="info-text">
-                  <span className="info-title">Secure Checkout</span>
-                  <span className="info-desc">SSL Encrypted</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="wishlist-compare">
-              <button className="wishlist-btn">
-                <span className="btn-icon heart"></span>
-                <span>Add to Wishlist</span>
-              </button>
-              <button className="compare-btn">
-                <span className="btn-icon compare"></span>
-                <span>Compare</span>
-              </button>
-            </div>
-          </motion.div>
+          </div>
         </div>
 
         <div className="book-tabs">
@@ -633,278 +608,170 @@ const BookDetail = () => {
           </div>
 
           <div className="tabs-content">
-            <AnimatePresence mode="wait">
-              {activeTab === "description" && (
-                <motion.div
-                  key="description"
-                  className="tab-content description-content"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <p className="book-description">{book.description || "No description provided."}</p>
-                </motion.div>
-              )}
+            {activeTab === "description" && (
+              <div className="tab-content description-content">
+                <p className="book-description">{book.description || "No description provided."}</p>
+              </div>
+            )}
 
-              {activeTab === "details" && (
-                <motion.div
-                  key="details"
-                  className="tab-content details-content"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <table className="details-table">
-                    <tbody>
-                      <tr>
-                        <th>Title</th>
-                        <td>{book.title}</td>
-                      </tr>
-                      <tr>
-                        <th>Author</th>
-                        <td>{book.author}</td>
-                      </tr>
-                      <tr>
-                        <th>ISBN</th>
-                        <td>{book.isbn}</td>
-                      </tr>
-                      <tr>
-                        <th>Publication Date</th>
-                        <td>{book.publishedDate.toLocaleDateString()}</td>
-                      </tr>
-                      <tr>
-                        <th>Pages</th>
-                        <td>{book.pages}</td>
-                      </tr>
-                      <tr>
-                        <th>Genre</th>
-                        <td>{book.genre}</td>
-                      </tr>
-                      <tr>
-                        <th>Language</th>
-                        <td>English</td>
-                      </tr>
-                      <tr>
-                        <th>Format</th>
-                        <td>Hardcover</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </motion.div>
-              )}
+            {activeTab === "details" && (
+              <div className="tab-content details-content">
+                <table className="details-table">
+                  <tbody>
+                    <tr>
+                      <th>Title</th>
+                      <td>{book.title}</td>
+                    </tr>
+                    <tr>
+                      <th>Author</th>
+                      <td>{book.author}</td>
+                    </tr>
+                    <tr>
+                      <th>ISBN</th>
+                      <td>{book.isbn}</td>
+                    </tr>
+                    <tr>
+                      <th>Publication Date</th>
+                      <td>{book.publishedDate.toLocaleDateString()}</td>
+                    </tr>
+                    <tr>
+                      <th>Pages</th>
+                      <td>{book.pages}</td>
+                    </tr>
+                    <tr>
+                      <th>Genre</th>
+                      <td>{book.genre}</td>
+                    </tr>
+                    <tr>
+                      <th>Language</th>
+                      <td>English</td>
+                    </tr>
+                    <tr>
+                      <th>Format</th>
+                      <td>Hardcover</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
 
-              {activeTab === "reviews" && (
-                <motion.div
-                  key="reviews"
-                  className="tab-content reviews-content"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  ref={reviewsRef}
-                >
-                  <div className="reviews-summary">
-                    <div className="rating-summary">
-                      <div className="average-rating">
-                        <span className="big-rating">{book.rating.toFixed(1)}</span>
-                        <div className="rating-stars">
-                          {Array(5)
-                            .fill(0)
-                            .map((_, i) => (
-                              <span key={i} className={`star ${i < Math.floor(book.rating) ? "filled" : ""}`}>
-                                {i < Math.floor(book.rating) ? "★" : "☆"}
-                              </span>
-                            ))}
-                        </div>
-                        <span className="total-reviews">Based on {reviews.length} reviews</span>
+            {activeTab === "reviews" && (
+              <div className="tab-content reviews-content" ref={reviewsRef}>
+                <div className="reviews-summary">
+                  <div className="rating-summary">
+                    <div className="average-rating">
+                      <span className="big-rating">{book.rating.toFixed(1)}</span>
+                      <div className="rating-stars">
+                        {Array(5)
+                          .fill(0)
+                          .map((_, i) => (
+                            <span key={i} className={`star ${i < Math.floor(book.rating) ? "filled" : ""}`}>
+                              {i < Math.floor(book.rating) ? "★" : "☆"}
+                            </span>
+                          ))}
                       </div>
+                      <span className="total-reviews">Based on {reviews.length} reviews</span>
+                    </div>
 
-                      <div className="rating-bars">
-                        {[5, 4, 3, 2, 1].map((stars) => {
-                          const count = reviews.filter((r) => Math.floor(r.rating) === stars).length
-                          const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0
+                    <div className="rating-bars">
+                      {[5, 4, 3, 2, 1].map((stars) => {
+                        const count = reviews.filter((r) => Math.floor(r.rating) === stars).length
+                        const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0
 
-                          return (
-                            <div key={stars} className="rating-bar-item">
-                              <span className="stars-label">{stars} stars</span>
-                              <div className="rating-bar-container">
-                                <div className="rating-bar" style={{ width: `${percentage}%` }}></div>
-                              </div>
-                              <span className="rating-count">{count}</span>
+                        return (
+                          <div key={stars} className="rating-bar-item">
+                            <span className="stars-label">{stars} stars</span>
+                            <div className="rating-bar-container">
+                              <div className="rating-bar" style={{ width: `${percentage}%` }}></div>
                             </div>
-                          )
-                        })}
-                      </div>
+                            <span className="rating-count">{count}</span>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
+                </div>
 
-                  {reviews.length === 0 ? (
-                    <div className="no-reviews">
-                      <p>No reviews yet for this book.</p>
-                    </div>
-                  ) : (
-                    <div className="reviews-list">
-                      {reviews.map((review, index) => (
-                        <motion.div
-                          key={review.id}
-                          className="review-item"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1, duration: 0.3 }}
-                        >
-                          <div className="review-header">
-                            <div className="reviewer-info">
-                              <div className="reviewer-avatar">{review.reviewerName.charAt(0).toUpperCase()}</div>
-                              <div className="reviewer-details">
-                                <span className="reviewer-name">{review.reviewerName}</span>
-                                <span className="review-date">{new Date(review.date).toLocaleDateString()}</span>
-                              </div>
-                            </div>
-                            <div className="review-rating">
-                              {Array(5)
-                                .fill(0)
-                                .map((_, i) => (
-                                  <span key={i} className={`star ${i < review.rating ? "filled" : ""}`}>
-                                    {i < review.rating ? "★" : "☆"}
-                                  </span>
-                                ))}
+                {reviews.length === 0 ? (
+                  <div className="no-reviews">
+                    <p>No reviews yet for this book.</p>
+                  </div>
+                ) : (
+                  <div className="reviews-list">
+                    {reviews.map((review) => (
+                      <div key={review.id} className="review-item">
+                        <div className="review-header">
+                          <div className="reviewer-info">
+                            <div className="reviewer-avatar">{review.reviewerName.charAt(0).toUpperCase()}</div>
+                            <div className="reviewer-details">
+                              <span className="reviewer-name">{review.reviewerName}</span>
+                              <span className="review-date">{new Date(review.date).toLocaleDateString()}</span>
                             </div>
                           </div>
-                          <p className="review-comment">{review.comment || "No comment provided."}</p>
-                          <div className="review-actions">
-                            <button className="review-action-btn helpful">
-                              <span className="action-icon thumbs-up"></span>
-                              <span>Helpful</span>
-                            </button>
-                            <button className="review-action-btn report">
-                              <span className="action-icon flag"></span>
-                              <span>Report</span>
-                            </button>
+                          <div className="review-rating">
+                            {Array(5)
+                              .fill(0)
+                              .map((_, i) => (
+                                <span key={i} className={`star ${i < review.rating ? "filled" : ""}`}>
+                                  {i < review.rating ? "★" : "☆"}
+                                </span>
+                              ))}
                           </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                        </div>
+                        <p className="review-comment">{review.comment || "No comment provided."}</p>
+                        <div className="review-actions">
+                          <button className="review-action-btn helpful">
+                            <span className="action-icon thumbs-up"></span>
+                            <span>Helpful</span>
+                          </button>
+                          <button className="review-action-btn report">
+                            <span className="action-icon flag"></span>
+                            <span>Report</span>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
-
-        <motion.div
-          className="related-books-section"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-        >
-          <h2 className="section-title">You May Also Like</h2>
-          <div className="related-books">
-            {relatedBooks.map((relatedBook, index) => (
-              <motion.div
-                key={relatedBook.id}
-                className="related-book-card"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.7 + index * 0.1 }}
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 10px 20px rgba(0,0,0,0.15)",
-                }}
-                onClick={() => navigate(`/book/${relatedBook.id}`)}
-              >
-                <div className="related-book-cover">
-                  <img
-                    src={relatedBook.imageUrl || "/placeholder.svg"}
-                    alt={relatedBook.title}
-                    onError={(e) => (e.target.src = "/default-cover.jpg")}
-                  />
-                </div>
-                <div className="related-book-info">
-                  <h3 className="related-book-title">{relatedBook.title}</h3>
-                  <p className="related-book-author">{relatedBook.author}</p>
-                  <div className="related-book-rating">
-                    {Array(5)
-                      .fill(0)
-                      .map((_, i) => (
-                        <span key={i} className={`star ${i < Math.floor(relatedBook.rating) ? "filled" : ""}`}>
-                          {i < Math.floor(relatedBook.rating) ? "★" : "☆"}
-                        </span>
-                      ))}
-                  </div>
-                  <p className="related-book-price">${relatedBook.price.toFixed(2)}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
       </div>
 
       {/* Image Modal */}
-      <AnimatePresence>
-        {showImageModal && (
-          <motion.div
-            className="image-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowImageModal(false)}
-          >
-            <motion.div
-              className="image-modal-content"
-              initial={{ scale: 0.5 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.5 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button className="modal-close-btn" onClick={() => setShowImageModal(false)}>
-                ×
-              </button>
-              <img
-                src={book.imageUrl ? `http://localhost:5001${book.imageUrl}` : "/default-cover.jpg"}
-                alt={book.title}
-                onError={(e) => (e.target.src = "/default-cover.jpg")}
-                className="modal-image"
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showImageModal && (
+        <div className="image-modal-overlay" onClick={() => setShowImageModal(false)}>
+          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={() => setShowImageModal(false)}>
+              ×
+            </button>
+            <img
+              src={book.imageUrl ? `http://localhost:5001${book.imageUrl}` : "/default-cover.jpg"}
+              alt={book.title}
+              onError={(e) => (e.target.src = "/default-cover.jpg")}
+              className="modal-image"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Login Modal */}
-      <AnimatePresence>
-        {showModal && (
-          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div
-              className="login-modal"
-              initial={{ scale: 0.5, y: 100 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.5, y: 100 }}
-            >
-              <h3 className="modal-title">{modalMessage}</h3>
-              <div className="modal-buttons">
-                <motion.button
-                  className="login-btn"
-                  onClick={() => navigate("/login")}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Log In
-                </motion.button>
-                <motion.button
-                  className="cancel-btn"
-                  onClick={() => setShowModal(false)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Cancel
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="login-modal">
+            <h3 className="modal-title">{modalMessage}</h3>
+            <div className="modal-buttons">
+              <button className="login-btn" onClick={() => navigate("/login")}>
+                Log In
+              </button>
+              <button className="cancel-btn" onClick={() => setShowModal(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
